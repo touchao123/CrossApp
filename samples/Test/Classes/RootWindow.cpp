@@ -99,7 +99,7 @@ void RootWindow::initUIView()
         {
             m_pRootNavigationController = new CANavigationController();
             m_pRootNavigationController->initWithRootViewController(tabBarController);
-            m_pRootNavigationController->setNavigationBarBackGroundImage(CAImage::create("image/navbg.jpg"));
+            m_pRootNavigationController->setNavigationBarBackgroundImage(CAImage::create("image/navbg.jpg"));
         }
         
     }
@@ -158,8 +158,8 @@ void RootWindow::intNewsView()
         newsTabBarController->initWithViewControllers(vec_news,CABarVerticalAlignmentTop);
         newsTabBarController->setScrollEnabled(true);
         newsTabBarController->setTabBarItem(CATabBarItem::create("", CAImage::create("image/tab_news_btn_up.png"),CAImage::create("image/tab_news_btn_down.png")));
-        newsTabBarController->setTabBarBackGroundImage(CAImage::create("source_material/tabbar_background.png"));
-        newsTabBarController->setTabBarSelectedBackGroundColor(CAColor_clear);
+        newsTabBarController->setTabBarBackgroundImage(CAImage::create("source_material/tabbar_background.png"));
+        newsTabBarController->setTabBarSelectedBackgroundColor(CAColor_clear);
         newsTabBarController->setTabBarTitleColorForNormal(CAColor_black);
         newsTabBarController->setTabBarTitleColorForSelected(ccc4(42,117,201,255));
         newsTabBarController->setTitle(" ");
@@ -198,8 +198,8 @@ void RootWindow::intNewsView()
         imageTabBarController->initWithViewControllers(vec_image,CABarVerticalAlignmentTop);
         imageTabBarController->setScrollEnabled(true);
         imageTabBarController->setTabBarItem(CATabBarItem::create("", CAImage::create("image/tab_image_btn_up.png"),CAImage::create("image/tab_image_btn_down.png")));
-        imageTabBarController->setTabBarBackGroundImage(CAImage::create("source_material/tabbar_background.png"));
-        imageTabBarController->setTabBarSelectedBackGroundColor(CAColor_clear);
+        imageTabBarController->setTabBarBackgroundImage(CAImage::create("source_material/tabbar_background.png"));
+        imageTabBarController->setTabBarSelectedBackgroundColor(CAColor_clear);
         imageTabBarController->setTabBarTitleColorForNormal(CAColor_black);
         imageTabBarController->setTabBarTitleColorForSelected(ccc4(42,117,201,255));
         imageTabBarController->setTitle(" ");
@@ -219,8 +219,8 @@ void RootWindow::intNewsView()
         CATabBarController* tabBarController = new CATabBarController();
         tabBarController->initWithViewControllers(vec);
         tabBarController->setTitle(" ");
-        tabBarController->setTabBarSelectedBackGroundColor(CAColor_clear);
-        tabBarController->setTabBarBackGroundImage(CAImage::create("image/tab_news_bg.png"));
+        tabBarController->setTabBarSelectedBackgroundColor(CAColor_clear);
+        tabBarController->setTabBarBackgroundImage(CAImage::create("image/tab_news_bg.png"));
         CANavigationBarItem* temp_nav = CANavigationBarItem::create(" ");
         temp_nav->setNagigationBarHidden(true);
         tabBarController->setNavigationBarItem(temp_nav);
@@ -250,7 +250,9 @@ void RootWindow::keyBackClicked()
     else if (this->getRootNavigationController()->getViewControllerCount() > 1)
     {
         this->getRootNavigationController()->popViewControllerAnimated(true);
-    }else{
+    }
+    else
+    {
         CAApplication::getApplication()->end();
     }
 }

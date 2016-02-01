@@ -41,8 +41,6 @@ NS_CC_BEGIN
 
 CAImage* CAImage::scaleToNewImageWithImage(CAImage* image, const DSize& size)
 {
-    DRect rect;
-    rect.size = size;
     CARenderImage* renderImage = CARenderImage::create(size.width, size.height);
     renderImage->begin();
     
@@ -56,10 +54,10 @@ CAImage* CAImage::scaleToNewImageWithImage(CAImage* image, const DSize& size)
     
     GLfloat    vertices[] =
     {
-        rect.origin.x,                     rect.origin.y,                      /*0.0f,*/
-        rect.origin.x + rect.size.width,   rect.origin.y,                      /*0.0f,*/
-        rect.origin.x,                     rect.origin.y + rect.size.height,   /*0.0f,*/
-        rect.origin.x + rect.size.width,   rect.origin.y + rect.size.height,   /*0.0f*/
+        0,            0,               /*0.0f,*/
+        size.width,   0,                    /*0.0f,*/
+        0,            size.height,     /*0.0f,*/
+        size.width,   size.height           /*0.0f*/
     };
     
     ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position | kCCVertexAttribFlag_TexCoords );
@@ -94,9 +92,7 @@ CAImage* CAImage::scaleToNewImageWithImage(CAImage* image, float scaleX, float s
 }
 
 CAImage* generateMipmapsWithImageRGB(CAImage* image)
-
 {
-
     int	new_w = image->getPixelsWide() >> 1;
     int	new_h = image->getPixelsHigh() >> 1;
     if (new_w < 1) new_w = 1;
@@ -116,10 +112,12 @@ CAImage* generateMipmapsWithImageRGB(CAImage* image)
         // Resample.  Simple average 2x2 --> 1, in-place.
         int	pitch = image->getPixelsWide() * 3;
         
-        for (int j = 0; j < new_h; j++) {
+        for (int j = 0; j < new_h; j++)
+        {
             unsigned char*	out = ((unsigned char*)data) + j * new_pitch;
             unsigned char*	in = ((unsigned char*)image->getData()) + (j << 1) * pitch;
-            for (int i = 0; i < new_w; i++) {
+            for (int i = 0; i < new_w; i++)
+            {
                 int	r, g, b;
                 r = (*(in + 0) + *(in + 3) + *(in + 0 + pitch) + *(in + 3 + pitch));
                 g = (*(in + 1) + *(in + 4) + *(in + 1 + pitch) + *(in + 4 + pitch));
@@ -160,10 +158,12 @@ CAImage* generateMipmapsWithImageRGBA(CAImage* image)
         
         // Resample.  Simple average 2x2 --> 1, in-place.
         int	pitch = image->getPixelsWide() * 4;
-        for (int j = 0; j < new_h; j++) {
+        for (int j = 0; j < new_h; j++)
+        {
             unsigned char*	out = ((unsigned char*)data) + j * new_pitch;
             unsigned char*	in = ((unsigned char*)image->getData()) + (j << 1) * pitch;
-            for (int i = 0; i < new_w; i++) {
+            for (int i = 0; i < new_w; i++)
+            {
                 int	r, g, b, a;
                 r = (*(in + 0) + *(in + 4) + *(in + 0 + pitch) + *(in + 4 + pitch));
                 g = (*(in + 1) + *(in + 5) + *(in + 1 + pitch) + *(in + 5 + pitch));
@@ -1015,15 +1015,15 @@ CAImage::~CAImage()
         ccGLDeleteTexture(m_uName);
     }
 
-    releaseData(&m_pData);
+    releaseData();
 
     s_pImages.erase(this);
 }
 
 CAImage*  CAImage::createWithString(const char *text, const CAColor4B& fontColor, const char *fontName, float fontSize, const DSize& dimensions, CATextAlignment hAlignment,
-                                    CAVerticalTextAlignment vAlignment, bool bWordWrap, int iLineSpacing, bool bBold, bool bItalics, bool bUnderLine)
+	CAVerticalTextAlignment vAlignment, bool bWordWrap, int iLineSpacing, bool bBold, bool bItalics, bool bUnderLine, bool bDeleteLine)
 {
-	return g_AFTFontCache.initWithString(text, fontColor, fontName, fontSize, dimensions.width, dimensions.height, hAlignment, vAlignment, bWordWrap, iLineSpacing, bBold, bItalics, bUnderLine);
+	return g_AFTFontCache.initWithString(text, fontColor, fontName, fontSize, dimensions.width, dimensions.height, hAlignment, vAlignment, bWordWrap, iLineSpacing, bBold, bItalics, bUnderLine, bDeleteLine);
 }
 
 int CAImage::getFontHeight(const char* pFontName, unsigned long nSize)
@@ -1776,7 +1776,7 @@ bool CAImage::initWithTiffData(const unsigned char * data, unsigned long dataLen
                  after invoking TIFFReadRGBAImageOriented*/
                 m_bHasPremultipliedAlpha = true;
                 
-                memcpy(m_pData, raster, npixels*sizeof (uint32));
+                memcpy(m_pImageData, raster, npixels*sizeof (uint32));
             }
             
             _TIFFfree(raster);
@@ -2037,7 +2037,8 @@ void CAImage::premultipliedImageData()
             break;
         case PixelFormat_A8:
             glTexImage2D(GL_TEXTURE_2D,
-                         0, GL_ALPHA,
+                         0,
+                         GL_ALPHA,
                          (GLsizei)m_uPixelsWide,
                          (GLsizei)m_uPixelsHigh,
                          0,
@@ -2047,7 +2048,8 @@ void CAImage::premultipliedImageData()
             break;
         case PixelFormat_I8:
             glTexImage2D(GL_TEXTURE_2D,
-                         0, GL_LUMINANCE,
+                         0,
+                         GL_LUMINANCE,
                          (GLsizei)m_uPixelsWide,
                          (GLsizei)m_uPixelsHigh,
                          0,
@@ -2137,13 +2139,20 @@ void CAImage::setShaderProgram(CAGLProgram* pShaderProgram)
 
 void CAImage::releaseData()
 {
-    releaseData(&m_pData);
+    if (m_pData)
+    {
+        releaseData(&m_pData);
+        m_uDataLenght = 0;
+    }
 }
 
 void CAImage::releaseData(unsigned char ** data)
 {
-    free(*data);
-    *data = NULL;
+    if (*data)
+    {
+        free(*data);
+        *data = NULL;
+    }
 }
 
 bool CAImage::hasPremultipliedAlpha()

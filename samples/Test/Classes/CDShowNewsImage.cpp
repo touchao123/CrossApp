@@ -45,7 +45,8 @@ void CDShowNewsImage::initNewsImageView(newsImage _image)
         CAScrollView* p_ScrollView = CAScrollView::createWithFrame(DRect(0,0,winSize.width,winSize.height));
         p_ScrollView->setMinimumZoomScale(1.0f);
         p_ScrollView->setMaximumZoomScale(2.5f);
-        p_ScrollView->setBackGroundColor(CAColor_clear);
+        p_ScrollView->setMultitouchGesture(CAScrollView::MultitouchGesture::Zoom);
+        p_ScrollView->setBackgroundColor(CAColor_clear);
         p_ScrollView->setShowsScrollIndicators(false);
         p_ScrollView->setBounceVertical(false);
         p_ScrollView->setScrollViewDelegate(this);
@@ -55,7 +56,7 @@ void CDShowNewsImage::initNewsImageView(newsImage _image)
     p_PageView = CAPageView::createWithFrame(DRect(0, 30, winSize.width, winSize.height), CAPageViewDirectionHorizontal);
     p_PageView->setViews(viewList);
     p_PageView->setPageViewDelegate(this);
-    p_PageView->setBackGroundColor(CAColor_black);
+    p_PageView->setBackgroundColor(CAColor_black);
     p_PageView->setPageViewDelegate(this);
     this->getView()->addSubview(p_PageView);
     
@@ -66,7 +67,7 @@ void CDShowNewsImage::initNewsImageView(newsImage _image)
     p_title = CALabel::createWithFrame(DRect(10,10,winSize.width-80,40));
     p_title->setText(m_image.m_title);
 	p_title->setColor(CAColor_white);
-    p_title->setFontSize(_px(34));
+    p_title->setFontSize(34);
     p_title->setBold(true);
     p_bg->addSubview(p_title);
     
@@ -75,17 +76,17 @@ void CDShowNewsImage::initNewsImageView(newsImage _image)
     p_index = CALabel::createWithFrame(DRect(winSize.width-60,10,80,30));
     p_index->setText(temp);
 	p_index->setColor(CAColor_white);
-    p_index->setFontSize(_px(30));
+    p_index->setFontSize(30);
     p_index->setBold(true);
     p_bg->addSubview(p_index);
     
     p_des = CALabel::createWithFrame(DRect(10,0,winSize.width-20,200));
     p_des->setText(m_image.m_imageDesc[4]);
 	p_des->setColor(ccc4(200, 200, 200, 255));
-    p_des->setFontSize(_px(26));
+    p_des->setFontSize(26);
     
     CAScrollView* ps = CAScrollView::createWithFrame(DRect(0,70,winSize.width,200));
-    ps->setBackGroundColor(CAColor_clear);
+    ps->setBackgroundColor(CAColor_clear);
     ps->setShowsVerticalScrollIndicator(false);
     ps->setShowsHorizontalScrollIndicator(false);
     ps->setBounceHorizontal(false);

@@ -24,7 +24,7 @@ CATableView::CATableView()
 :m_pTableHeaderView(NULL)
 ,m_pTableFooterView(NULL)
 ,m_obSeparatorColor(CAColor_gray)
-,m_nSeparatorViewHeight(s_px_to_dip(2.0f))
+,m_nSeparatorViewHeight(1)
 ,m_nTableHeaderHeight(0)
 ,m_nTableFooterHeight(0)
 ,m_nSections(0)
@@ -120,7 +120,7 @@ bool CATableView::ccTouchBegan(CATouch *pTouch, CAEvent *pEvent)
     if (!CAScrollView::ccTouchBegan(pTouch, pEvent))
         return false;
     
-    if (m_bAllowsSelection && this->isScrollWindowNotOutSide() == false && isInertia)
+    if (m_pContainer->isTouchEnabled() && m_bAllowsSelection && this->isScrollWindowNotOutSide() == false && isInertia)
     {
         DPoint point = m_pContainer->convertTouchToNodeSpace(pTouch);
         
@@ -318,11 +318,6 @@ float CATableView::maxSpeed(float dt)
     return (128 * 60 * dt);
 }
 
-float CATableView::maxSpeedCache(float dt)
-{
-    return (maxSpeed(dt) * 2.0f);
-}
-
 float CATableView::decelerationRatio(float dt)
 {
     return 1.8f * dt;
@@ -456,8 +451,6 @@ void CATableView::clearData()
         itr3->clear();
     }
     m_rLineRectss.clear();
-    
-    m_pSelectedTableCells.clear();
     m_pUsedLines.clear();
     
     std::map<CAIndexPath2E, CATableViewCell*>::iterator itr4;
@@ -541,6 +534,7 @@ void CATableView::reloadViewSizeData()
 
 void CATableView::reloadData()
 {
+    CC_RETURN_IF(m_pTableViewDataSource == NULL);
     this->reloadViewSizeData();
 
     this->removeAllSubviews();
@@ -579,7 +573,7 @@ void CATableView::reloadData()
             m_rTableCellRectss[i][j] = DRect(0, y, width, m_nRowHeightss[i][j]);
             y += m_nRowHeightss[i][j];
             
-            m_rLineRectss[i][j] = DRect(0, y, width, m_nSeparatorViewHeight);
+            m_rLineRectss[i][j] = DRect(0, y, width, s_px_to_dip(m_nSeparatorViewHeight));
             y += m_nSeparatorViewHeight;
         }
         
@@ -587,7 +581,7 @@ void CATableView::reloadData()
         
         CAView* sectionFooterView = m_pTableViewDataSource->tableViewSectionViewForFooterInSection(this, sectionFooterRect.size, i);
         
-        if (sectionFooterView)
+        if (sectionFooterView) 
         {
             sectionFooterView->setFrame(sectionFooterRect);
             this->insertSubview(sectionFooterView, 2);

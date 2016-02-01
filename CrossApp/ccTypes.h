@@ -20,6 +20,7 @@ typedef struct _Color4B
     GLubyte b;
     GLubyte a;
 } CAColor4B;
+
 //! helper macro that creates an CAColor4B type
 static inline CAColor4B
 ccc4(const GLubyte r, const GLubyte g, const GLubyte b, const GLubyte o)
@@ -32,11 +33,11 @@ static inline CAColor4B
 ccc4Int(unsigned int rgba)
 {
     CAColor4B c;
-    c.r = rgba % 0x100;
+    c.b = rgba % 0x100;
     rgba /= 0x100;
     c.g = rgba % 0x100;
     rgba /= 0x100;
-    c.b = rgba % 0x100;
+    c.r = rgba % 0x100;
     rgba /= 0x100;
     c.a = rgba % 0x100;
     return c;
@@ -45,13 +46,13 @@ ccc4Int(unsigned int rgba)
 static inline int
 getIntFormColor4B(const CAColor4B& color)
 {
-    return (color.r + color.g * 0x100 + color.b * 0x10000 + color.a * 0x1000000);
+    return (color.b + color.g * 0x100 + color.r * 0x10000 + color.a * 0x1000000);
 }
 
 static inline unsigned int
 getUIntFormColor4B(const CAColor4B& color)
 {
-    return (color.r + color.g * 0x100 + color.b * 0x10000 + color.a * 0x1000000);
+    return (color.b + color.g * 0x100 + color.r * 0x10000 + color.a * 0x1000000);
 }
 
 //CAColor4B predefined colors
@@ -79,7 +80,8 @@ static const CAColor4B CAColor_clear   = {255, 255, 255,   0};
 /** RGBA color composed of 4 floats
 @since v0.8
 */
-typedef struct _Color4F {
+typedef struct _Color4F
+{
     GLfloat r;
     GLfloat g;
     GLfloat b;
@@ -357,6 +359,8 @@ typedef enum
 // This message is used for doing something before coming to background, such as save CARenderImage.
 // This message is posted in CrossApp/platform/android/jni/MessageJni.cpp.
 #define EVENT_COME_TO_BACKGROUND    "event_come_to_background"
+
+#define LINE_WIDTH MAX(s_px_to_dip(1.0f) + 0.01f, 1.01f)
 
 NS_CC_END
 

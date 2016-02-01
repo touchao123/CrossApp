@@ -22,7 +22,7 @@ CASlider::CASlider()
     , m_fValue(0.0f)
     , m_fMinValue(0.0f)
     , m_fMaxValue(1.0f)
-    , m_fTrackHeight(3.0f)
+    , m_fTrackHeight(4.0f)
     , m_pMinTrackTintImage(NULL)
     , m_pMaxTrackTintImage(NULL)
     , m_pThumbTintImage(NULL)
@@ -49,60 +49,20 @@ void CASlider::onExitTransitionDidStart()
 void CASlider::onEnterTransitionDidFinish()
 {
     CAControl::onEnterTransitionDidFinish();
+}
+
+CASlider* CASlider::create()
+{
+    CASlider* slider = new CASlider();
     
-    if (NULL == m_pMinTrackTintImage)
+    if (slider && slider->init())
     {
-        this->setMinTrackTintImage(CAImage::create("source_material/btn_square_highlighted.png"));
+        slider->autorelease();
+        return slider;
     }
     
-    if (NULL == m_pMaxTrackTintImage)
-    {
-        this->setMaxTrackTintImage(CAImage::create("source_material/btn_square_disabled.png"));
-    }
-    
-    if (NULL == m_pThumbTintImage)
-    {
-        this->setThumbTintImage(CAImage::create("source_material/slider_indicator.png"));
-    }
-    
-    const DSize size = this->getBounds().size;
-    
-    if (m_fTrackHeight > size.height)
-    {
-        m_fTrackHeight = size.height;
-    }
-    
-    if (NULL == m_pMinTrackTintImageView)
-    {
-        m_pMinTrackTintImageView = CAScale9ImageView::createWithImage(m_pMinTrackTintImage);
-    }
-    
-    if (m_pMinTrackTintImageView && m_pMinTrackTintImageView->getSuperview() == NULL)
-    {
-        this->addSubview(m_pMinTrackTintImageView);
-    }
-    
-    if (NULL == m_pThumbTintImageView)
-    {
-        m_pThumbTintImageView = CAImageView::createWithImage(m_pThumbTintImage);
-        const DSize size = this->getBounds().size;
-        m_pThumbTintImageView->setFrame(DRect(0, 0, size.height, size.height));
-    }
-    if (m_pThumbTintImageView && m_pThumbTintImageView->getSuperview() == NULL)
-    {
-        this->addSubview(m_pThumbTintImageView);
-    }
-    
-    if (NULL == m_pMaxTrackTintImageView)
-    {
-        m_pMaxTrackTintImageView = CAScale9ImageView::createWithImage(m_pMaxTrackTintImage);
-    }
-    if (m_pMaxTrackTintImageView && m_pMaxTrackTintImageView->getSuperview() == NULL)
-    {
-        this->addSubview(m_pMaxTrackTintImageView);
-    }
-    
-    this->layoutSubViews();
+    CC_SAFE_DELETE(slider);
+    return NULL;
 }
 
 CASlider* CASlider::createWithFrame(const DRect& rect)
@@ -133,9 +93,31 @@ CASlider* CASlider::createWithCenter(const DRect& rect)
     return NULL;
 }
 
-bool CASlider::initWithFrame(const DRect& rect)
+bool CASlider::init()
 {
     if (!CAControl::init())
+    {
+        return false;
+    }
+    
+    this->setMinTrackTintImage(CAImage::create("source_material/btn_square_highlighted.png"));
+    m_pMinTrackTintImageView = CAScale9ImageView::createWithImage(m_pMinTrackTintImage);
+    this->addSubview(m_pMinTrackTintImageView);
+    
+    this->setMaxTrackTintImage(CAImage::create("source_material/btn_square_disabled.png"));
+    m_pMaxTrackTintImageView = CAScale9ImageView::createWithImage(m_pMaxTrackTintImage);
+    this->addSubview(m_pMaxTrackTintImageView);
+    
+    this->setThumbTintImage(CAImage::create("source_material/slider_indicator.png"));
+    m_pThumbTintImageView = CAImageView::createWithImage(m_pThumbTintImage);
+    this->addSubview(m_pThumbTintImageView);
+    
+    return true;
+}
+
+bool CASlider::initWithFrame(const DRect& rect)
+{
+    if (!this->init())
     {
         return false;
     }
@@ -146,7 +128,7 @@ bool CASlider::initWithFrame(const DRect& rect)
 
 bool CASlider::initWithCenter(const DRect& rect)
 {
-    if (!CAControl::init())
+    if (!this->init())
     {
         return false;
     }
@@ -163,19 +145,18 @@ void CASlider::layoutSubViews()
         && m_pMinTrackTintImageView
         && m_pMaxTrackTintImageView)
     {
-        const DSize size = this->getBounds().size;
-        const DSize thumbSize = m_pThumbTintImageView->getBounds().size;
-        const float halfThumbWidth = thumbSize.width / 2;
-        const float totalWidth = size.width;
-        const float percent = m_fValue / (m_fMaxValue - m_fMinValue);
-        const float centerX = ((totalWidth - thumbSize.width) * percent) + halfThumbWidth;
-        const float trackOriginY = (size.height - m_fTrackHeight) / 2;
-        const float minRight = centerX - halfThumbWidth;
-        const float maxLeft = centerX + halfThumbWidth;
+        DSize thumbSize = m_pThumbTintImageView->getBounds().size;
+        float halfThumbWidth = thumbSize.width / 2;
+        float totalWidth = m_obContentSize.width;
+        float percent = m_fValue / (m_fMaxValue - m_fMinValue);
+        float centerX = ((totalWidth - thumbSize.width) * percent) + halfThumbWidth;
+        float trackOriginY = (m_obContentSize.height - m_fTrackHeight) / 2;
+        float minRight = centerX - halfThumbWidth;
+        float maxLeft = centerX + halfThumbWidth;
         
-        m_pThumbTintImageView->setCenterOrigin(DPoint(centerX, size.height / 2));
+        m_pThumbTintImageView->setCenter(DRect(centerX, m_obContentSize.height / 2, m_obContentSize.height, m_obContentSize.height));
         m_pMinTrackTintImageView->setFrame(DRect(0, trackOriginY, minRight, m_fTrackHeight));
-        m_pMaxTrackTintImageView->setFrame(DRect(maxLeft, trackOriginY, size.width - maxLeft, m_fTrackHeight));
+        m_pMaxTrackTintImageView->setFrame(DRect(maxLeft, trackOriginY, m_obContentSize.width - maxLeft, m_fTrackHeight));
     }
 }
 
@@ -226,7 +207,7 @@ void CASlider::setMinTrackTintImage(CAImage* image)
         {
             ((CAScale9ImageView*)m_pMinTrackTintImageView)->setImage(m_pMinTrackTintImage);
         }
-        this->layoutSubViews();
+//        this->layoutSubViews();
     }
 }
 
@@ -241,7 +222,7 @@ void CASlider::setMaxTrackTintImage(CAImage* image)
         {
             ((CAScale9ImageView*)m_pMaxTrackTintImageView)->setImage(m_pMaxTrackTintImage);
         }
-        this->layoutSubViews();
+//        this->layoutSubViews();
     }
 }
 
@@ -332,6 +313,8 @@ void CASlider::removeTarget(CAObject* target, SEL_CAControl selector)
 void CASlider::setContentSize(const DSize & var)
 {
     CAControl::setContentSize(DSize(var.width, var.height));
+    
+    this->layoutSubViews();
 }
 
 NS_CC_END

@@ -53,7 +53,6 @@ CARenderImage::CARenderImage()
 CARenderImage::~CARenderImage()
 {
     CC_SAFE_RELEASE(m_pImageView);
-    CC_SAFE_RELEASE(m_pImage);
     
     glDeleteFramebuffers(1, &m_uFBO);
     if (m_uDepthRenderBufffer)
@@ -210,10 +209,10 @@ bool CARenderImage::initWithWidthAndHeight(int w, int h, CAImage::PixelFormat eF
         unsigned int powH = (unsigned int)(h + 1) / 2;
         powH *= 2;
         
-        data = (unsigned char *)malloc((int)(powW * powH * 4));
+        data = (unsigned char *)malloc((unsigned long)(powW * powH * 4));
         CC_BREAK_IF(! data);
 
-        memset(data, 0, (int)(powW * powH * 4));
+        memset(data, 0, (unsigned long)(powW * powH * 4));
         m_ePixelFormat = eFormat;
         m_uPixelsWide = powW;
         m_uPixelsHigh = powH;
@@ -440,7 +439,7 @@ void CARenderImage::end()
     m_pImage = new CAImage();
     m_pImage->initWithRawData(pTempData, CAImage::PixelFormat_RGBA8888, m_uPixelsWide, m_uPixelsHigh);
     m_pImageView->setImage(m_pImage);
-    
+    m_pImage->release();
     CC_SAFE_DELETE_ARRAY(pBuffer);
     CC_SAFE_DELETE_ARRAY(pTempData);
 }
@@ -567,9 +566,9 @@ void CARenderImage::draw()
 bool CARenderImage::saveToFile(const char *szFilePath)
 {
     bool bRet = false;
-    if (m_pImage)
+    if (m_pImageView->getImage())
     {
-        bRet = m_pImage->saveToFile(szFilePath);
+        bRet = m_pImageView->getImage()->saveToFile(szFilePath);
     }
     return bRet;
 }

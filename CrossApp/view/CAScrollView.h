@@ -41,15 +41,21 @@ public:
     virtual void scrollViewFooterBeginRefreshing(CAScrollView* view){};
     
     virtual void scrollViewTouchUpWithoutMoved(CAScrollView* view, const DPoint& point){};
-    
-public:
-    
-    virtual void scrollViewDidScroll(CAScrollView* view){};
 };
 
 class CAIndicator;
 class CC_DLL CAScrollView : public CAView
 {
+public:
+    
+    typedef enum
+    {
+        Zoom,
+        Rotate,
+        ZoomAndRotate,
+        None
+    }
+    MultitouchGesture;
     
 public:
 
@@ -85,9 +91,9 @@ public:
     
     DPoint getContentOffset();
     
-    void setBackGroundImage(CAImage* image);
+    void setBackgroundImage(CAImage* image);
 
-    void setBackGroundColor(const CAColor4B &color);
+    void setBackgroundColor(const CAColor4B &color);
     
     void setZoomScale(float zoom);
 
@@ -133,6 +139,8 @@ public:
     
     CC_PROPERTY(CAPullToRefreshView*, m_pFooterRefreshView, FooterRefreshView);
     
+    CC_SYNTHESIZE_PASS_BY_REF(MultitouchGesture, m_eMultitouchGesture, MultitouchGesture);// default is CAScrollView::MultitouchGesture::None
+    
     void endHeaderRefresh();
     
     void endFooterRefresh();
@@ -155,11 +163,6 @@ protected:
     inline virtual float maxSpeed(float dt)
     {
         return (90 * 60 * dt);
-    }
-    
-    inline virtual float maxSpeedCache(float dt)
-    {
-        return (maxSpeed(dt) * 1.5f);
     }
     
     inline virtual float decelerationRatio(float dt)
@@ -240,8 +243,16 @@ protected:
     
     CAVector<CAView*> m_vChildInThis;
     
-    float m_fTouchLength;
+    float m_fPreviewScale;
+    
+    float m_fBeganTouchLength;
 
+    float m_fBeganZoomScale;
+    
+    float m_fBeganAngle;
+    
+    float m_fBeganGestureAngle;
+    
     DPoint m_tInertia;
     
     std::deque<DPoint> m_tPointOffset;

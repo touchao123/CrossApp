@@ -9,7 +9,7 @@ NS_CC_BEGIN
 
 float fround(float x)//double round
 {
-    float y = 10000;
+    float y = 100;
     int xx = x > FLT_EPSILON ? (x * y + 0.5) : (x * y - 0.5);
     return xx/y;
 }
@@ -79,8 +79,8 @@ void DPoint::setPoint(float x, float y)
 
 bool DPoint::equals(const DPoint& target) const
 {
-    return (fabs(this->x - target.x) < FLT_EPSILON)
-        && (fabs(this->y - target.y) < FLT_EPSILON);
+    return (fabs(this->x - target.x) < 0.001f)
+        && (fabs(this->y - target.y) < 0.001f);
 }
 
 bool DPoint::fuzzyEquals(const DPoint& b, float var) const
@@ -96,7 +96,7 @@ float DPoint::getAngle(const DPoint& other) const
     DPoint a2 = normalize();
     DPoint b2 = other.normalize();
     float angle = atan2f(a2.cross(b2), a2.dot(b2));
-    if( fabs(angle) < FLT_EPSILON ) return 0.f;
+    if( fabs(angle) < 0.001f ) return 0.f;
     return angle;
 }
 
@@ -167,8 +167,8 @@ void DSize::setSize(float width, float height)
 
 bool DSize::equals(const DSize& target) const
 {
-    return (fabs(this->width  - target.width)  < FLT_EPSILON)
-        && (fabs(this->height - target.height) < FLT_EPSILON);
+    return (fabs(this->width  - target.width)  < 0.001f)
+        && (fabs(this->height - target.height) < 0.001f);
 }
 
 // implementation of DRect
@@ -222,22 +222,22 @@ DRect DRect::operator/(float a) const
 
 bool DRect::equals(const DRect& rect) const
 {
-    if (fabsf(this->getMinX() - rect.getMinX()) >= FLT_EPSILON)
+    if (fabsf(this->getMinX() - rect.getMinX()) >= 0.001f)
     {
         return false;
     }
     
-    if (fabsf(this->getMaxX() - rect.getMaxX()) >= FLT_EPSILON)
+    if (fabsf(this->getMaxX() - rect.getMaxX()) >= 0.001f)
     {
         return false;
     }
     
-    if (fabsf(this->getMinY() - rect.getMinY()) >= FLT_EPSILON)
+    if (fabsf(this->getMinY() - rect.getMinY()) >= 0.001f)
     {
         return false;
     }
     
-    if (fabsf(this->getMaxY() - rect.getMaxY()) >= FLT_EPSILON)
+    if (fabsf(this->getMaxY() - rect.getMaxY()) >= 0.001f)
     {
         return false;
     }
@@ -247,32 +247,32 @@ bool DRect::equals(const DRect& rect) const
 
 float DRect::getMaxX() const
 {
-    return m_bCenter ? (float)(origin.x + size.width/2) : (float)(origin.x + size.width);
+    return m_bCenter ? (float)(origin.x + size.width / 2) : (float)(origin.x + size.width);
 }
 
 float DRect::getMidX() const
 {
-    return m_bCenter ? (float)origin.x : (float)(origin.x + size.width / 2.0);
+    return m_bCenter ? (float)origin.x : (float)(origin.x + size.width / 2);
 }
 
 float DRect::getMinX() const
 {
-    return m_bCenter ? (float)(origin.x - size.width/2) : (float)origin.x;
+    return m_bCenter ? (float)(origin.x - size.width / 2) : (float)origin.x;
 }
 
 float DRect::getMaxY() const
 {
-    return m_bCenter ? (float)(origin.y + size.height/2) : (float)(origin.y + size.height);
+    return m_bCenter ? (float)(origin.y + size.height / 2) : (float)(origin.y + size.height);
 }
 
 float DRect::getMidY() const
 {
-    return m_bCenter ? (float)origin.y : (float)(origin.y + size.height / 2.0);
+    return m_bCenter ? (float)origin.y : (float)(origin.y + size.height / 2);
 }
 
 float DRect::getMinY() const
 {
-    return m_bCenter ? (float)(origin.y - size.height/2) : (float)origin.y;
+    return m_bCenter ? (float)(origin.y - size.height / 2) : (float)origin.y;
 }
 
 bool DRect::containsPoint(const DPoint& point) const
@@ -308,6 +308,17 @@ void DRect::InflateRect(float v)
 	{
 		origin.x -= v;
 		origin.y -= v;
+	}
+}
+
+void DRect::InflateRect(float l, float t, float r, float b)
+{
+	size.width += (l+r);
+	size.height += (t+b);
+	if (!m_bCenter)
+	{
+		origin.x -= l;
+		origin.y -= t;
 	}
 }
 

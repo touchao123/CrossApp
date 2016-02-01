@@ -17,32 +17,17 @@
 
 NS_CC_BEGIN
 
-#if CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-
-#define NAVBAR_HEIGHT 128
-#define TABBAR_HEIGHT 138
-
-#else
-
-#define NAVBAR_HEIGHT 88
-#define TABBAR_HEIGHT 98
-
-#endif
-
-#define NAVBAR_CONTENT_HEIGHT 88
-#define TABBAR_CONTENT_HEIGHT 98
-
-
 #pragma CANavigationBar
 
-CANavigationBar::CANavigationBar()
+CANavigationBar::CANavigationBar(bool clearance)
 :m_pContentView(NULL)
 ,m_pTitle(NULL)
 ,m_pDelegate(NULL)
-,m_pBackGroundView(NULL)
+,m_pBackgroundView(NULL)
 ,m_cTitleColor(CAColor_white)
 ,m_cButtonColor(CAColor_white)
 ,m_pItem(NULL)
+,m_bClearance(clearance)
 {
 
 }
@@ -50,32 +35,57 @@ CANavigationBar::CANavigationBar()
 CANavigationBar::~CANavigationBar()
 {
     CC_SAFE_RELEASE_NULL(m_pItem);
-    CC_SAFE_RELEASE(m_pBackGroundView);
+    CC_SAFE_RELEASE(m_pBackgroundView);
 }
 
-bool CANavigationBar::init(const DSize& size)
+static CANavigationBar* createWithFrame(const DRect& rect)
 {
-    this->setColor(CAColor_clear);
-    DSize winSize = CAApplication::getApplication()->getWinSize();
-    DSize contentSize;
-    contentSize.width = size.width > FLT_EPSILON ? MIN(winSize.width, size.width) : winSize.width;
-    contentSize.height = size.height > FLT_EPSILON ? size.height : NAVBAR_HEIGHT;
-    this->setFrame(DRect(0, 0, contentSize.width, contentSize.height));
-    
-    DRect rect = this->getBounds();
-    rect.size.height = NAVBAR_CONTENT_HEIGHT;
-    rect.origin.y = NAVBAR_HEIGHT - NAVBAR_CONTENT_HEIGHT;
+    CANavigationBar* navigationBar = new CANavigationBar();
+    if (navigationBar && navigationBar->initWithFrame(rect))
+    {
+        navigationBar->autorelease();
+        return navigationBar;
+    }
+    CC_SAFE_DELETE(navigationBar);
+    return NULL;
+}
+
+static CANavigationBar* createWithCenter(const DRect& rect)
+{
+    CANavigationBar* navigationBar = new CANavigationBar();
+    if (navigationBar && navigationBar->initWithFrame(rect))
+    {
+        navigationBar->autorelease();
+        return navigationBar;
+    }
+    CC_SAFE_DELETE(navigationBar);
+    return NULL;
+}
+
+bool CANavigationBar::init()
+{
     m_pContentView = new CAView();
-    m_pContentView->setFrame(rect);
     this->addSubview(m_pContentView);
-    
+    m_pContentView->release();
     return true;
 }
 
-CANavigationBar* CANavigationBar::create(const DSize& size)
+CANavigationBar* CANavigationBar::createWithFrame(const DRect& rect, bool clearance)
 {
-    CANavigationBar* nav = new CANavigationBar();
-    if (nav && nav->init(size))
+    CANavigationBar* nav = new CANavigationBar(clearance);
+    if (nav && nav->initWithFrame(rect))
+    {
+        nav->autorelease();
+        return nav;
+    }
+    CC_SAFE_DELETE(nav);
+    return NULL;
+}
+
+CANavigationBar* CANavigationBar::createWithCenter(const DRect& rect, bool clearance)
+{
+    CANavigationBar* nav = new CANavigationBar(clearance);
+    if (nav && nav->initWithCenter(rect))
     {
         nav->autorelease();
         return nav;
@@ -87,10 +97,10 @@ CANavigationBar* CANavigationBar::create(const DSize& size)
 void CANavigationBar::onEnterTransitionDidFinish()
 {
     CAView::onEnterTransitionDidFinish();
-
-    if (m_pBackGroundView == NULL || m_pBackGroundView->getSuperview() == NULL)
+    
+    if (m_pBackgroundView == NULL || m_pBackgroundView->getSuperview() == NULL)
     {
-        this->showBackGround();
+        this->showBackground();
     }
     this->updateNavigationBar();
 }
@@ -98,6 +108,15 @@ void CANavigationBar::onEnterTransitionDidFinish()
 void CANavigationBar::onExitTransitionDidStart()
 {
     CAView::onExitTransitionDidStart();
+}
+
+void CANavigationBar::setContentSize(const DSize & var)
+{
+    CAView::setContentSize(var);
+    DRect rect = this->getBounds();
+    rect.origin.y = m_bClearance ? 40 : 0;
+    rect.size.height = rect.size.height - rect.origin.y;
+    m_pContentView->setFrame(rect);
 }
 
 void CANavigationBar::setItem(CANavigationBarItem* item)
@@ -112,15 +131,15 @@ void CANavigationBar::setItem(CANavigationBarItem* item)
     this->updateNavigationBar();
 }
 
-void CANavigationBar::setBackGroundView(CAView* var)
+void CANavigationBar::setBackgroundView(CAView* var)
 {
     var->setTouchEnabled(false);
-    this->removeSubview(m_pBackGroundView);
+    this->removeSubview(m_pBackgroundView);
     CC_SAFE_RETAIN(var);
-    CC_SAFE_RELEASE(m_pBackGroundView);
-    m_pBackGroundView = var;
+    CC_SAFE_RELEASE(m_pBackgroundView);
+    m_pBackgroundView = var;
     CC_RETURN_IF(!m_bRunning);
-    this->showBackGround();
+    this->showBackground();
 }
 
 void CANavigationBar::setTitleColor(const CAColor4B& color)
@@ -146,15 +165,15 @@ void CANavigationBar::updateNavigationBar()
     this->showRightButton();
 }
 
-void CANavigationBar::showBackGround()
+void CANavigationBar::showBackground()
 {
-    if (m_pBackGroundView == NULL)
+    if (m_pBackgroundView == NULL)
     {
-        m_pBackGroundView = CAScale9ImageView::createWithImage(CAImage::create("source_material/navigation_bg.png"));
-        CC_SAFE_RETAIN(m_pBackGroundView);
+        m_pBackgroundView = CAScale9ImageView::createWithImage(CAImage::create("source_material/navigation_bg.png"));
+        CC_SAFE_RETAIN(m_pBackgroundView);
     }
-    m_pBackGroundView->setFrame(this->getBounds());
-    this->insertSubview(m_pBackGroundView, -1);
+    m_pBackgroundView->setFrame(this->getBounds());
+    this->insertSubview(m_pBackgroundView, -1);
 }
 
 void CANavigationBar::showTitle()
@@ -201,7 +220,7 @@ void CANavigationBar::showTitle()
         title->setVerticalTextAlignmet(CAVerticalTextAlignmentCenter);
         title->setNumberOfLine(1);
 		title->setColor(m_cTitleColor);
-        title->setFontSize(32);
+        title->setFontSize(36);
         m_pContentView->addSubview(title);
         m_pTitle = title;
         
@@ -225,19 +244,25 @@ void CANavigationBar::showLeftButton()
     const CAVector<CAObject*>& buttonItems = m_pItem->getLeftButtonItems();
 
     DRect rect;
-    rect.size.width = 80;
-    rect.size.height = m_pContentView->getBounds().size.height * 0.8f;
-    rect.origin.x = rect.size.width * 0.7f;
-    rect.origin.y = m_pContentView->getBounds().size.height * 0.5f;
+    rect.size.width = m_pContentView->getBounds().size.height;
+    rect.size.height = m_pContentView->getBounds().size.height;
+    rect.origin.x = 0;
+    rect.origin.y = 0;
 
     for (size_t i=0; i<buttonItems.size(); i++)
     {
         CABarButtonItem* item = dynamic_cast<CABarButtonItem*>(buttonItems.at(i));
         
         rect.size.width = item ? item->getItemWidth() : 80;
-        rect.origin.x += i * rect.size.width;
         
-        CAButton* button = CAButton::createWithCenter(rect, CAButtonTypeCustom);
+        if (i == 0)
+        {
+            rect.origin.x = 10;
+        }
+        
+        CAButton* button = CAButton::createWithFrame(rect, CAButtonTypeCustom);
+        button->setImageSize(DSize(42, 42));
+        button->setTitleFontSize(36);
         m_pContentView->addSubview(button);
         
         if (item == NULL && m_pItem)
@@ -271,6 +296,8 @@ void CANavigationBar::showLeftButton()
             button->addTarget(item->getTarget(), item->getSel(), CAControlEventTouchUpInSide);
         }
         m_pLeftButtons.push_back(button);
+        
+        rect.origin.x += rect.size.width;
     }
 }
 
@@ -286,19 +313,25 @@ void CANavigationBar::showRightButton()
     const CAVector<CAObject*>& buttonItems = m_pItem->getRightButtonItems();
     
     DRect rect;
-    rect.size.width = 80;
-    rect.size.height = m_pContentView->getBounds().size.height * 0.8f;
-    rect.origin.x = m_pContentView->getBounds().size.width - rect.size.width * 0.7f;
-    rect.origin.y = m_pContentView->getBounds().size.height * 0.5f;
+    rect.size.width = m_pContentView->getBounds().size.height;
+    rect.size.height = m_pContentView->getBounds().size.height;
+    rect.origin.x = 0;
+    rect.origin.y = 0;
 
     for (size_t i=0; i<buttonItems.size(); i++)
     {
         CABarButtonItem* item = dynamic_cast<CABarButtonItem*>(buttonItems.at(i));
         
         rect.size.width = item ? item->getItemWidth() : 80;
-        rect.origin.x -= i * rect.size.width;
         
-        CAButton* button = CAButton::createWithCenter(rect, CAButtonTypeCustom);
+        if (i == 0)
+        {
+            rect.origin.x = m_pContentView->getBounds().size.width - rect.size.width - 10;
+        }
+        
+        CAButton* button = CAButton::createWithFrame(rect, CAButtonTypeCustom);
+        button->setImageSize(DSize(42, 42));
+        button->setTitleFontSize(36);
         m_pContentView->addSubview(button);
 
         if (item)
@@ -326,6 +359,8 @@ void CANavigationBar::showRightButton()
             button->addTarget(item->getTarget(), item->getSel(), CAControlEventTouchUpInSide);
         }
         m_pRightButtons.push_back(button);
+        
+        rect.origin.x -= rect.size.width;
     }
 }
 
@@ -397,14 +432,14 @@ void CABadgeView::setContentSize(const DSize& contentSize)
 
 #pragma CATabBar
 
-CATabBar::CATabBar()
+CATabBar::CATabBar(bool clearance)
 :m_pContentView(NULL)
-,m_pBackGroundView(NULL)
+,m_pBackgroundView(NULL)
 ,m_pSelectedIndicatorView(NULL)
-,m_pBackGroundImage(NULL)
-,m_sBackGroundColor(CAColor_white)
-,m_pSelectedBackGroundImage(NULL)
-,m_sSelectedBackGroundColor(CAColor_white)
+,m_pBackgroundImage(NULL)
+,m_sBackgroundColor(CAColor_white)
+,m_pSelectedBackgroundImage(NULL)
+,m_sSelectedBackgroundColor(CAColor_white)
 ,m_pSelectedIndicatorImage(NULL)
 ,m_sSelectedIndicatorColor(CAColor_white)
 ,m_pSelectedItem(NULL)
@@ -414,9 +449,16 @@ CATabBar::CATabBar()
 ,m_sSelectedTitleColor(ccc4(50, 193, 255, 255))
 ,m_bShowIndicator(false)
 ,m_pDelegate(NULL)
-,m_eVerticalAlignment(CABarVerticalAlignmentBottom)
+,m_bClearance(clearance)
 {
+    m_pBackgroundImage = CAImage::create("source_material/tabBar_bg.png");
+    m_pBackgroundImage->retain();
     
+    m_pSelectedBackgroundImage = CAImage::create("source_material/tabBar_selected_bg.png");
+    m_pSelectedBackgroundImage->retain();
+    
+    m_pSelectedIndicatorImage = CAImage::create("source_material/tabBar_selected_indicator.png");
+    m_pSelectedIndicatorImage->retain();
 }
 
 CATabBar::~CATabBar()
@@ -429,57 +471,56 @@ CATabBar::~CATabBar()
     m_pItems.clear();
     m_pButtons.clear();
     m_pBadgeViews.clear();
-    CC_SAFE_RELEASE_NULL(m_pBackGroundImage);
-    CC_SAFE_RELEASE_NULL(m_pSelectedBackGroundImage);
+    CC_SAFE_RELEASE_NULL(m_pBackgroundImage);
+    CC_SAFE_RELEASE_NULL(m_pSelectedBackgroundImage);
     CC_SAFE_RELEASE_NULL(m_pSelectedIndicatorImage);
-    CC_SAFE_RELEASE_NULL(m_pSelectedBackGroundImage);
+    CC_SAFE_RELEASE_NULL(m_pSelectedBackgroundImage);
     CC_SAFE_RELEASE_NULL(m_pSelectedIndicatorImage);
 }
 
-bool CATabBar::init(const CAVector<CATabBarItem*>& items, const DSize& size, const CABarVerticalAlignment& var)
+CATabBar* CATabBar::createWithFrame(const DRect& rect, bool clearance)
 {
-    if (!CAView::init())
+    CATabBar* tabBar = new CATabBar(clearance);
+    if (tabBar && tabBar->initWithFrame(rect))
     {
-        return false;
+        tabBar->autorelease();
+        return tabBar;
     }
-    m_eVerticalAlignment = var;
-    this->setColor(CAColor_clear);
-    this->setItems(items);
-
-    float height;
-    switch (m_eVerticalAlignment)
+    CC_SAFE_DELETE(tabBar);
+    return NULL;
+}
+CATabBar* CATabBar::createWithCenter(const DRect& rect, bool clearance)
+{
+    CATabBar* tabBar = new CATabBar(clearance);
+    if (tabBar && tabBar->initWithCenter(rect))
     {
-        case CABarVerticalAlignmentBottom:
-            height = TABBAR_CONTENT_HEIGHT;
-            break;
-        case CABarVerticalAlignmentTop:
-            height = TABBAR_HEIGHT;
-            break;
-        default:
-            break;
+        tabBar->autorelease();
+        return tabBar;
     }
-    
-    DSize winSize = CAApplication::getApplication()->getWinSize();
-    DSize contentSize;
-    contentSize.width = size.width > FLT_EPSILON ? MIN(winSize.width, size.width) : winSize.width;
-    contentSize.height = size.height > FLT_EPSILON ? size.height : height;
-    this->setFrame(DRect(0, 0, contentSize.width, contentSize.height));
+    CC_SAFE_DELETE(tabBar);
+    return NULL;
+}
 
-    DRect rect = this->getBounds();
-    rect.size.width = MIN(rect.size.width, 1024);
-    rect.size.height = TABBAR_CONTENT_HEIGHT;
-    rect.origin.x = (this->getBounds().size.width - rect.size.width) / 2;
-    rect.origin.y = height - rect.size.height;
-    
+bool CATabBar::init()
+{
     m_pContentView = new CAView();
-    m_pContentView->setFrame(rect);
     this->addSubview(m_pContentView);
     m_pContentView->release();
     
+    return true;
+}
+
+
+
+void CATabBar::setItems(const CAVector<CATabBarItem*>& items)
+{
+    CC_RETURN_IF(items.empty());
+	m_pItems = items;
+    
     unsigned int count = (unsigned int)m_pItems.size();
     m_cItemSize = m_pContentView->getBounds().size;
-    m_cItemSize.width = rect.size.width/count;
-
+    m_cItemSize.width = MIN(m_cItemSize.width, 1024) / count;
+    
     if (m_pButtons.empty())
     {
         for (unsigned int i=0; i<count; i++)
@@ -493,47 +534,105 @@ bool CATabBar::init(const CAVector<CATabBarItem*>& items, const DSize& size, con
             btn->setTag(i);
             btn->addTarget(this, CAControl_selector(CATabBar::setTouchSelected), CAControlEventTouchUpInSide);
             m_pButtons.pushBack(btn);
+            btn->setTitleForState(CAControlStateAll, m_pItems.at(i)->getTitle());
+            btn->setTitleColorForState(CAControlStateAll, m_sTitleColor);
+            btn->setTitleColorForState(CAControlStateHighlighted, m_sSelectedTitleColor);
+            btn->setTitleColorForState(CAControlStateSelected, m_sSelectedTitleColor);
+            btn->setImageForState(CAControlStateNormal, m_pItems.at(i)->getImage());
+            CAImage* selectedImage = m_pItems.at(i)->getSelectedImage()
+            ? m_pItems.at(i)->getSelectedImage()
+            : m_pItems.at(i)->getImage();
+            btn->setImageForState(CAControlStateHighlighted, selectedImage);
+            btn->setImageForState(CAControlStateSelected, selectedImage);
+            btn->setBackgroundViewForState(CAControlStateNormal, CAView::createWithColor(CAColor_clear));
+            if (m_pSelectedBackgroundImage)
+            {
+                btn->setBackgroundViewForState(CAControlStateHighlighted,
+                                               CAScale9ImageView::createWithImage(m_pSelectedBackgroundImage));
+                btn->setBackgroundViewForState(CAControlStateSelected,
+                                               CAScale9ImageView::createWithImage(m_pSelectedBackgroundImage));
+            }
+            else
+            {
+                btn->setBackgroundViewForState(CAControlStateHighlighted,
+                                               CAView::createWithColor(m_sSelectedBackgroundColor));
+                btn->setBackgroundViewForState(CAControlStateSelected,
+                                               CAView::createWithColor(m_sSelectedBackgroundColor));
+            }
+            btn->setAllowsSelected(true);
+            
+            DRect badgeRect;
+            badgeRect.origin = rect.origin + DPoint(rect.size.width - 25, 25);
             
             CABadgeView* badgeView = new CABadgeView();
             badgeView->init();
-            badgeView->setCenter(DRect(rect.size.width, 25, 0, 0));
-            btn->insertSubview(badgeView, 10);
+            badgeView->setCenter(badgeRect);
+            m_pContentView->insertSubview(badgeView, 10);
+            badgeView->setBadgeText(m_pItems.at(i)->getBadgeValue());
             m_pBadgeViews.pushBack(badgeView);
             badgeView->release();
         }
     }
-    if (m_pBackGroundImage == NULL)
-    {
-        this->setBackGroundImage(CAImage::create("source_material/tabBar_bg.png"));
-    }
-    if (m_pSelectedBackGroundImage == NULL)
-    {
-        this->setSelectedBackGroundImage(CAImage::create("source_material/tabBar_selected_bg.png"));
-    }
-    if (m_pSelectedIndicatorImage == NULL)
-    {
-        this->setSelectedIndicatorImage(CAImage::create("source_material/tabBar_selected_indicator.png"));
-    }
+    
 
-    return true;
+    this->setBackgroundImage(m_pBackgroundImage);
+    this->setSelectedBackgroundImage(m_pSelectedBackgroundImage);
+    this->setSelectedIndicatorImage(m_pSelectedIndicatorImage);
+    
 }
 
-CATabBar* CATabBar::create(const CAVector<CATabBarItem*>& items, const DSize& size, const CABarVerticalAlignment& var)
+void CATabBar::onEnterTransitionDidFinish()
 {
-    CATabBar* tabBar = new CATabBar();
-    if (tabBar && tabBar->init(items, size, var))
-    {
-        tabBar->autorelease();
-        return tabBar;
-    }
-    CC_SAFE_DELETE(tabBar);
-    return NULL;
+    CAView::onEnterTransitionDidFinish();
 }
 
-void CATabBar::setItems(const CAVector<CATabBarItem*>& items)
+void CATabBar::onExitTransitionDidStart()
 {
-    CC_RETURN_IF(items.empty());
-	m_pItems = items;
+    CAView::onExitTransitionDidStart();
+}
+
+void CATabBar::setContentSize(const DSize & var)
+{
+    CAView::setContentSize(var);
+    
+    DRect rect = this->getBounds();
+    rect.size.width = MIN(rect.size.width, 1024);
+    rect.origin.x = (this->getBounds().size.width - rect.size.width) / 2;
+    rect.origin.y = m_bClearance ? 40 : 0;
+    rect.size.height = rect.size.height - rect.origin.y;
+    
+    m_pContentView->setFrame(rect);
+    
+    if (m_pBackgroundView)
+    {
+        m_pBackgroundView->setFrame(this->getBounds());
+    }
+    
+    unsigned int count = (unsigned int)m_pItems.size();
+    m_cItemSize = rect.size;
+    m_cItemSize.width /= count;
+    for (unsigned int i=0; i<count; i++)
+    {
+        DRect rect = DRectZero;
+        rect.size = m_cItemSize;
+        rect.origin.x = m_cItemSize.width * i;
+        rect.origin.y = 0;
+        m_pButtons.at(i)->setFrame(rect);
+        
+        DRect badgeRect;
+        badgeRect.origin = rect.origin + DPoint(rect.size.width - 25, 25);
+        m_pBadgeViews.at(i)->setCenter(badgeRect);
+    }
+    
+    if (m_pSelectedIndicatorView)
+    {
+        DRect rect;
+        rect.size.width = m_cItemSize.width;
+        rect.size.height = 8;
+        rect.origin.x = m_nSelectedIndex * m_cItemSize.width;
+        rect.origin.y = m_cItemSize.height - rect.size.height;
+        m_pSelectedIndicatorView->setFrame(rect);
+    }
 }
 
 void CATabBar::replaceItemAtIndex(size_t index, CATabBarItem* item)
@@ -563,57 +662,57 @@ const DRect& CATabBar::getContentViewFrame()
     return m_pContentView->getFrame();
 }
 
-void CATabBar::setBackGroundImage(CrossApp::CAImage *var)
+void CATabBar::setBackgroundImage(CrossApp::CAImage *var)
 {
     CC_SAFE_RETAIN(var);
-    CC_SAFE_RELEASE_NULL(m_pBackGroundImage);
-    m_pBackGroundImage = var;
-    m_sBackGroundColor = CAColor_white;
-    this->showBackGround();
+    CC_SAFE_RELEASE_NULL(m_pBackgroundImage);
+    m_pBackgroundImage = var;
+    m_sBackgroundColor = CAColor_white;
+    this->showBackground();
 }
 
-CAImage* CATabBar::getBackGroundImage()
+CAImage* CATabBar::getBackgroundImage()
 {
-    return m_pBackGroundImage;
+    return m_pBackgroundImage;
 }
 
-void CATabBar::setBackGroundColor(const CAColor4B &var)
+void CATabBar::setBackgroundColor(const CAColor4B &var)
 {
-    m_sBackGroundColor = var;
-    CC_SAFE_RELEASE_NULL(m_pBackGroundImage);
-    this->showBackGround();
+    m_sBackgroundColor = var;
+    CC_SAFE_RELEASE_NULL(m_pBackgroundImage);
+    this->showBackground();
 }
 
-const CAColor4B& CATabBar::getBackGroundColor()
+const CAColor4B& CATabBar::getBackgroundColor()
 {
-    return m_sBackGroundColor;
+    return m_sBackgroundColor;
 }
 
-void CATabBar::setSelectedBackGroundImage(CrossApp::CAImage *var)
+void CATabBar::setSelectedBackgroundImage(CrossApp::CAImage *var)
 {
     CC_SAFE_RETAIN(var);
-    CC_SAFE_RELEASE_NULL(m_pSelectedBackGroundImage);
-    m_pSelectedBackGroundImage = var;
-    m_sSelectedBackGroundColor = CAColor_white;
+    CC_SAFE_RELEASE_NULL(m_pSelectedBackgroundImage);
+    m_pSelectedBackgroundImage = var;
+    m_sSelectedBackgroundColor = CAColor_white;
     
-    this->showSelectedBackGround();
+    this->showSelectedBackground();
 }
 
-CAImage* CATabBar::getSelectedBackGroundImage()
+CAImage* CATabBar::getSelectedBackgroundImage()
 {
-    return m_pSelectedBackGroundImage;
+    return m_pSelectedBackgroundImage;
 }
 
-void CATabBar::setSelectedBackGroundColor(const CAColor4B &var)
+void CATabBar::setSelectedBackgroundColor(const CAColor4B &var)
 {
-    m_sSelectedBackGroundColor = var;
-    CC_SAFE_RELEASE_NULL(m_pSelectedBackGroundImage);
-    this->showSelectedBackGround();
+    m_sSelectedBackgroundColor = var;
+    CC_SAFE_RELEASE_NULL(m_pSelectedBackgroundImage);
+    this->showSelectedBackground();
 }
 
-const CAColor4B& CATabBar::getSelectedBackGroundColor()
+const CAColor4B& CATabBar::getSelectedBackgroundColor()
 {
-    return m_sSelectedBackGroundColor;
+    return m_sSelectedBackgroundColor;
 };
 
 void CATabBar::setSelectedIndicatorImage(CrossApp::CAImage *var)
@@ -683,23 +782,23 @@ const CAColor4B& CATabBar::getTitleColorForSelected()
     return m_sSelectedTitleColor;
 }
 
-void CATabBar::showBackGround()
+void CATabBar::showBackground()
 {
-    this->removeSubview(m_pBackGroundView);
+    this->removeSubview(m_pBackgroundView);
     
-    if (m_pBackGroundImage)
+    if (m_pBackgroundImage)
     {
-        m_pBackGroundView = CAScale9ImageView::createWithImage(m_pBackGroundImage);
+        m_pBackgroundView = CAScale9ImageView::createWithImage(m_pBackgroundImage);
     }
     else
     {
-        m_pBackGroundView = CAView::createWithColor(m_sBackGroundColor);
+        m_pBackgroundView = CAView::createWithColor(m_sBackgroundColor);
     }
-    m_pBackGroundView->setFrame(this->getBounds());
-    this->insertSubview(m_pBackGroundView, -1);
+    m_pBackgroundView->setFrame(this->getBounds());
+    this->insertSubview(m_pBackgroundView, -1);
 }
 
-void CATabBar::showSelectedBackGround()
+void CATabBar::showSelectedBackground()
 {
     for (size_t i=0; i<m_pButtons.size(); i++)
     {
@@ -714,20 +813,20 @@ void CATabBar::showSelectedBackGround()
         : m_pItems.at(i)->getImage();
         btn->setImageForState(CAControlStateHighlighted, selectedImage);
         btn->setImageForState(CAControlStateSelected, selectedImage);
-        btn->setBackGroundViewForState(CAControlStateNormal, CAView::createWithColor(CAColor_clear));
-        if (m_pSelectedBackGroundImage)
+        btn->setBackgroundViewForState(CAControlStateNormal, CAView::createWithColor(CAColor_clear));
+        if (m_pSelectedBackgroundImage)
         {
-            btn->setBackGroundViewForState(CAControlStateHighlighted,
-                                           CAScale9ImageView::createWithImage(m_pSelectedBackGroundImage));
-            btn->setBackGroundViewForState(CAControlStateSelected,
-                                           CAScale9ImageView::createWithImage(m_pSelectedBackGroundImage));
+            btn->setBackgroundViewForState(CAControlStateHighlighted,
+                                           CAScale9ImageView::createWithImage(m_pSelectedBackgroundImage));
+            btn->setBackgroundViewForState(CAControlStateSelected,
+                                           CAScale9ImageView::createWithImage(m_pSelectedBackgroundImage));
         }
         else
         {
-            btn->setBackGroundViewForState(CAControlStateHighlighted,
-                                           CAView::createWithColor(m_sSelectedBackGroundColor));
-            btn->setBackGroundViewForState(CAControlStateSelected,
-                                           CAView::createWithColor(m_sSelectedBackGroundColor));
+            btn->setBackgroundViewForState(CAControlStateHighlighted,
+                                           CAView::createWithColor(m_sSelectedBackgroundColor));
+            btn->setBackgroundViewForState(CAControlStateSelected,
+                                           CAView::createWithColor(m_sSelectedBackgroundColor));
         }
         btn->setAllowsSelected(true);
         
@@ -792,13 +891,16 @@ void CATabBar::setSelectedAtIndex(int index)
         if (m_pSelectedIndicatorView)
         {
             m_pSelectedIndicatorView->setVisible(m_bShowIndicator);
-            DPoint p = m_pSelectedIndicatorView->getFrameOrigin();
-            p.x = m_nSelectedIndex * m_cItemSize.width;
+            DRect rect;
+            rect.size.width = m_cItemSize.width;
+            rect.size.height = 8;
+            rect.origin.x = m_nSelectedIndex * m_cItemSize.width;
+            rect.origin.y = m_cItemSize.height - rect.size.height;
             
             CAViewAnimation::beginAnimations("", NULL);
             CAViewAnimation::setAnimationDuration(0.3f);
             CAViewAnimation::setAnimationCurve(CAViewAnimationCurveEaseOut);
-            m_pSelectedIndicatorView->setFrameOrigin(p);
+            m_pSelectedIndicatorView->setFrame(rect);
             CAViewAnimation::commitAnimations();
         }
     }

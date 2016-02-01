@@ -13,8 +13,6 @@
 #include <sys/stat.h>
 #endif
 
-#define ___FILE_PATH___ std::string(CCFileUtils::sharedFileUtils()->getWritablePath() + "image")
-
 #if (CC_TARGET_PLATFORM != CC_PLATFORM_WIN32)
 
 void getAllFilePaths(std::vector<std::string>& filePaths, std::vector<std::string>& dirPaths, const std::string& path)
@@ -54,7 +52,6 @@ unsigned long getFilePathSize(const std::string& path)
     std::vector<std::string> filePaths;
     std::vector<std::string> dirPaths;
     getAllFilePaths(filePaths, dirPaths, path);
-    
     for (int i=0; i<filePaths.size(); i++)
     {
         FILE* fp = fopen(filePaths.at(i).c_str(), "rb");
@@ -161,7 +158,7 @@ CDNewsAboutController::~CDNewsAboutController()
 void CDNewsAboutController::viewDidLoad()
 {
     winSize = this->getView()->getBounds().size;
-    
+    temp_Path = CCFileUtils::sharedFileUtils()->getWritablePath() + "image";
     if (p_TableView!=NULL)
     {
         this->getView()->removeSubview(p_TableView);
@@ -188,21 +185,21 @@ void CDNewsAboutController::viewDidLoad()
     
     CAButton* btn1 = CAButton::create(CAButtonTypeSquareRect);
     btn1->setCenter(DRect(winSize.width/6, 600-(winSize.width/3)/9*5/2, winSize.width/3-1, (winSize.width/3)/9*5));
-    btn1->setBackGroundViewForState(CAControlStateNormal, CAScale9ImageView::createWithImage(CAImage::create("image/about_btn1_up.png")));
-    btn1->setBackGroundViewForState(CAControlStateHighlighted, CAScale9ImageView::createWithImage(CAImage::create("image/about_btn1_down.png")));
+    btn1->setBackgroundViewForState(CAControlStateNormal, CAScale9ImageView::createWithImage(CAImage::create("image/about_btn1_up.png")));
+    btn1->setBackgroundViewForState(CAControlStateHighlighted, CAScale9ImageView::createWithImage(CAImage::create("image/about_btn1_down.png")));
     view->addSubview(btn1);
     
     CAButton* btn2 = CAButton::create(CAButtonTypeSquareRect);
     btn2->setCenter(DRect(winSize.width/2, 600-(winSize.width/3)/9*5/2, winSize.width/3-1, (winSize.width/3)/9*5));
-    btn2->setBackGroundViewForState(CAControlStateNormal, CAScale9ImageView::createWithImage(CAImage::create("image/about_btn2_up.png")));
-    btn2->setBackGroundViewForState(CAControlStateHighlighted, CAScale9ImageView::createWithImage(CAImage::create("image/about_btn2_down.png")));
+    btn2->setBackgroundViewForState(CAControlStateNormal, CAScale9ImageView::createWithImage(CAImage::create("image/about_btn2_up.png")));
+    btn2->setBackgroundViewForState(CAControlStateHighlighted, CAScale9ImageView::createWithImage(CAImage::create("image/about_btn2_down.png")));
     view->addSubview(btn2);
     
     CAButton* btn3 = CAButton::create(CAButtonTypeSquareRect);
     btn3->setTag(100);
     btn3->setCenter(DRect(winSize.width/6*5, 600-(winSize.width/3)/9*5/2, winSize.width/3-1, (winSize.width/3)/9*5));
-    btn3->setBackGroundViewForState(CAControlStateNormal, CAScale9ImageView::createWithImage(CAImage::create("image/about_btn3_up.png")));
-    btn3->setBackGroundViewForState(CAControlStateHighlighted, CAScale9ImageView::createWithImage(CAImage::create("image/about_btn3_down.png")));
+    btn3->setBackgroundViewForState(CAControlStateNormal, CAScale9ImageView::createWithImage(CAImage::create("image/about_btn3_up.png")));
+    btn3->setBackgroundViewForState(CAControlStateHighlighted, CAScale9ImageView::createWithImage(CAImage::create("image/about_btn3_down.png")));
     view->addSubview(btn3);
     
     p_TableView->setTableHeaderView(view);
@@ -318,10 +315,10 @@ unsigned int CDNewsAboutController::tableViewHeightForHeaderInSection(CATableVie
 
 void CDNewsAboutController::worker()
 {
-    _filesize = getFilePathSize(___FILE_PATH___);
+    _filesize = getFilePathSize(temp_Path);
     _tempfilesize = _filesize;
     CCLog("_filesize = = %f",_filesize);
-    removeFilePath(___FILE_PATH___);
+    removeFilePath(temp_Path);
     _filesize = 0;
     CCLog("_filesize111111 = = %f",_filesize);
 }

@@ -21,10 +21,10 @@ class CAWindow;
 class CATabBarController;
 class CANavigationController;
 class CADrawerController;
+class CAUIEditorParser;
 
 class CC_DLL CAViewController
-: public CAResponder
-, public CAViewDelegate
+: public CAContentContainer
 , public CAKeypadDelegate
 {
     
@@ -62,9 +62,11 @@ public:
     
     virtual void setKeypadEnabled(bool value);
     
-    virtual CAView* getView();
+    CAView* getView();
     
     virtual CAResponder* nextResponder();
+
+    CAView* getViewWithID(const std::string& tag);
 
 public:
     
@@ -110,6 +112,8 @@ private:
     
     void viewOnExitTransitionDidStart();
     
+    void parser();
+    
 private:
     
     CAView* m_pView;
@@ -117,6 +121,8 @@ private:
     bool m_bLifeLock;
     
     bool m_bKeypadEnabled;
+    
+    CAUIEditorParser* m_pParser;
 };
 
 class CC_DLL CANavigationController
@@ -160,9 +166,9 @@ public:
     
     CC_PROPERTY_IS(bool, m_bTouchMoved, TouchMoved);
 
-    CC_PROPERTY(CAImage*, m_pNavigationBarBackGroundImage, NavigationBarBackGroundImage);
+    CC_PROPERTY(CAImage*, m_pNavigationBarBackgroundImage, NavigationBarBackgroundImage);
 
-    CC_PROPERTY_PASS_BY_REF(CAColor4B, m_sNavigationBarBackGroundColor, NavigationBarBackGroundColor);
+    CC_PROPERTY_PASS_BY_REF(CAColor4B, m_sNavigationBarBackgroundColor, NavigationBarBackgroundColor);
     
     CC_PROPERTY_PASS_BY_REF(CAColor4B, m_sNavigationBarTitleColor, NavigationBarTitleColor);
 
@@ -241,6 +247,8 @@ protected:
     bool m_bPopViewController;
 
     DSize m_tNavigationBarSize;
+    
+    bool m_bClearance;
 };
 
 class CC_DLL CATabBarController
@@ -271,19 +279,17 @@ public:
     
     virtual void setTabBarHidden(bool hidden, bool animated);
     
-    CC_PROPERTY_IS(bool, m_bScrollEnabled, ScrollEnabled);
-    
     CC_SYNTHESIZE_IS_READONLY(bool, m_bTabBarHidden, TabBarHidden);
     
     CC_SYNTHESIZE_READONLY_PASS_BY_REF(CABarVerticalAlignment, m_eTabBarVerticalAlignment, TabBarVerticalAlignment);
     
-    CC_PROPERTY(CAImage*, m_pTabBarBackGroundImage, TabBarBackGroundImage);
+    CC_PROPERTY(CAImage*, m_pTabBarBackgroundImage, TabBarBackgroundImage);
     
-    CC_PROPERTY_PASS_BY_REF(CAColor4B, m_sTabBarBackGroundColor, TabBarBackGroundColor);
+    CC_PROPERTY_PASS_BY_REF(CAColor4B, m_sTabBarBackgroundColor, TabBarBackgroundColor);
     
-    CC_PROPERTY(CAImage*, m_pTabBarSelectedBackGroundImage, TabBarSelectedBackGroundImage);
+    CC_PROPERTY(CAImage*, m_pTabBarSelectedBackgroundImage, TabBarSelectedBackgroundImage);
     
-    CC_PROPERTY_PASS_BY_REF(CAColor4B, m_sTabBarSelectedBackGroundColor, TabBarSelectedBackGroundColor);
+    CC_PROPERTY_PASS_BY_REF(CAColor4B, m_sTabBarSelectedBackgroundColor, TabBarSelectedBackgroundColor);
     
     CC_PROPERTY(CAImage*, m_pTabBarSelectedIndicatorImage, TabBarSelectedIndicatorImage);
     
@@ -330,6 +336,8 @@ protected:
     DPoint getTabBarNowPoint();
     
 protected:
+    
+    int m_iTabBarHeight;
     
     float m_fProgress;
     

@@ -154,12 +154,12 @@ void CAImageView::updateByImageViewScaleType()
             if (imageRatio > viewRatio)
             {
                 m_fTop = (viewSize.height - viewSize.width / imageRatio) / 2;
-                m_fBottom = m_fTop + viewSize.width / imageRatio - 0.5f;
+                m_fBottom = m_fTop + viewSize.width / imageRatio;
             }
             else if (imageRatio < viewRatio)
             {
                 m_fLeft = (viewSize.width - viewSize.height * imageRatio) / 2;
-                m_fRight = m_fLeft + viewSize.height * imageRatio - 0.5f;
+                m_fRight = m_fLeft + viewSize.height * imageRatio;
             }
         }
             break;

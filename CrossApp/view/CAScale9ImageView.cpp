@@ -114,8 +114,12 @@ void CAScale9ImageView::updateWithImage()
 {
     CAColor4B color = this->getColor();
 
-    this->removeSubview(m_pScale9ImageView);
-    m_pScale9ImageView = NULL;
+    if (m_pScale9ImageView)
+    {
+        m_pScale9ImageView->removeAllSubviews();
+        m_pScale9ImageView->removeFromSuperview();
+        m_pScale9ImageView = NULL;
+    }
     
     memset(m_pImageView, 0, sizeof(m_pImageView));
 
@@ -254,6 +258,7 @@ void CAScale9ImageView::setContentSize(const DSize &size)
 {
     CAView::setContentSize(size);
     
+    this->updateCapInset();
     this->updatePositions();
 }
 
@@ -398,11 +403,8 @@ void CAScale9ImageView::setAlpha(float alpha)
 void CAScale9ImageView::setImage(CrossApp::CAImage *image)
 {
     CAView::setImage(image);
-    if (m_pobImage)
-    {
-        this->updateWithImage();
-        this->updatePositions();
-    }
+    this->updateWithImage();
+    this->updatePositions();
 }
 
 bool CAScale9ImageView::initWithFrame(const DRect& rect, const CAColor4B& color4B)

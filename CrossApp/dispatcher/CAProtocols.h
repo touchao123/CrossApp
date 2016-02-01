@@ -104,7 +104,7 @@ public:
      * @param   Image A valid CAImage object, which will be applied to this sprite object.
      * @lua NA
      */
-    virtual void setImage(CAImage* texture) = 0;
+    virtual void setImage(CAImage* image) = 0;
 };
 
 /**
@@ -128,20 +128,6 @@ public:
      * @return The string that is currently being used in this label
      */
     virtual const std::string& getString(void) const = 0;
-};
-
-/** 
- * OpenGL projection protocol 
- * @js NA
- * @lua NA
- */
-class CC_DLL CAApplicationDelegate
-{
-public:
-    /** 
-     * Will be called by CAApplication when the projection is updated, and "custom" projection is used
-     */
-    virtual void updateProjection(void) = 0;
 };
 
 NS_CC_END

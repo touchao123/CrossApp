@@ -395,9 +395,6 @@
       <Filter>script_support</Filter>
     </ClCompile>
     <ClCompile Include="..\basics\CAThread.cpp" />
-    <ClCompile Include="..\view\CATextView.cpp">
-      <Filter>view</Filter>
-    </ClCompile>
     <ClCompile Include="..\view\CALabelStyle.cpp">
       <Filter>view</Filter>
     </ClCompile>
@@ -417,9 +414,6 @@
       <Filter>view</Filter>
     </ClCompile>
     <ClCompile Include="..\view\CADrawView.cpp">
-      <Filter>view</Filter>
-    </ClCompile>
-    <ClCompile Include="..\view\CATextField.cpp">
       <Filter>view</Filter>
     </ClCompile>
     <ClCompile Include="..\platform\win32\CAClipboard.cpp">
@@ -506,7 +500,18 @@
     <ClCompile Include="..\support\CAProfiling.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="..\view\CAWaterfallView.cpp" />
+    <ClCompile Include="..\view\CAWaterfallView.cpp">
+      <Filter>view</Filter>
+    </ClCompile>
+    <ClCompile Include="..\support\CAUIEditorParser.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\platform\win32\CATextField.cpp">
+      <Filter>platform\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\platform\win32\CATextView.cpp">
+      <Filter>platform\win32</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\cocoa\CCNS.h">
@@ -891,9 +896,6 @@
     </ClInclude>
     <ClInclude Include="..\basics\CASyncQueue.h" />
     <ClInclude Include="..\basics\CAThread.h" />
-    <ClInclude Include="..\view\CATextView.h">
-      <Filter>view</Filter>
-    </ClInclude>
     <ClInclude Include="..\view\CALabelStyle.h">
       <Filter>view</Filter>
     </ClInclude>
@@ -913,9 +915,6 @@
       <Filter>view</Filter>
     </ClInclude>
     <ClInclude Include="..\view\CADrawView.h">
-      <Filter>view</Filter>
-    </ClInclude>
-    <ClInclude Include="..\view\CATextField.h">
       <Filter>view</Filter>
     </ClInclude>
     <ClInclude Include="..\platform\CAClipboard.h">
@@ -1018,7 +1017,18 @@
     <ClInclude Include="..\support\sqlite3\sqlite3ext.h">
       <Filter>support\sqlite3</Filter>
     </ClInclude>
-    <ClInclude Include="..\view\CAWaterfallView.h" />
+    <ClInclude Include="..\view\CAWaterfallView.h">
+      <Filter>view</Filter>
+    </ClInclude>
+    <ClInclude Include="..\support\CAUIEditorParser.h">
+      <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\platform\CATextField.h">
+      <Filter>platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\platform\CATextView.h">
+      <Filter>platform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\support\Json\lib_json\json_internalarray.inl">
@@ -1030,8 +1040,5 @@
     <None Include="..\support\Json\lib_json\json_valueiterator.inl">
       <Filter>support\json\lib_json</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="libCrossApp.rc" />
   </ItemGroup>
 </Project>

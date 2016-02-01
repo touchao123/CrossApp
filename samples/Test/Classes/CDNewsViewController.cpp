@@ -54,7 +54,7 @@ void CDNewsTableCell::initWithCell()
 	theTitle->setColor(CAColor_black);
     theTitle->setTextAlignment(CATextAlignmentLeft);
     theTitle->setVerticalTextAlignmet(CAVerticalTextAlignmentTop);
-    theTitle->setFontSize(_px(32));
+    theTitle->setFontSize(32);
     theTitle->setTag(100);
     this->getContentView()->addSubview(theTitle);
     
@@ -62,7 +62,7 @@ void CDNewsTableCell::initWithCell()
 	theDesc->setColor(CAColor_black);
     theDesc->setTextAlignment(CATextAlignmentLeft);
     theDesc->setVerticalTextAlignmet(CAVerticalTextAlignmentTop);
-    theDesc->setFontSize(_px(24));
+    theDesc->setFontSize(24);
     theDesc->setTag(102);
 	theDesc->setColor(CAColor_gray);
     theDesc->setLineSpacing(10);
@@ -133,7 +133,7 @@ void CDNewsViewController::viewDidLoad()
         string tempSign = getSign(key_value);
         CCLog("sign===%s",tempSign.c_str());
         key_value["sign"] = tempSign;
-        string tempUrl = "http://api.doubi.so/news/";
+        string tempUrl = "http://api.9miao.com/news/";
         
         CommonHttpManager::getInstance()->send_post(tempUrl, key_value, this,
                                                    CommonHttpJson_selector(CDNewsViewController::onRequestFinished));
@@ -168,8 +168,8 @@ void CDNewsViewController::showAlert()
     btn5->setTag(100);
     btn5->setCenter(DRect(winSize.width/2, winSize.height/2, winSize.width, winSize.height));
     btn5->setTitleColorForState(CAControlStateNormal,CAColor_white);
-    btn5->setBackGroundViewForState(CAControlStateNormal, bg);
-    btn5->setBackGroundViewForState(CAControlStateHighlighted, bg);
+    btn5->setBackgroundViewForState(CAControlStateNormal, bg);
+    btn5->setBackgroundViewForState(CAControlStateHighlighted, bg);
     btn5->addTarget(this, CAControl_selector(CDNewsViewController::buttonCallBack), CAControlEventTouchUpInSide);
     p_alertView->addSubview(btn5);
     
@@ -180,7 +180,7 @@ void CDNewsViewController::showAlert()
 	test->setColor(CAColor_gray);
     test->setTextAlignment(CATextAlignmentCenter);
     test->setVerticalTextAlignmet(CAVerticalTextAlignmentTop);
-    test->setFontSize(_px(24));
+    test->setFontSize(24);
     test->setText("网络不给力，请点击屏幕重新加载～");
     p_alertView->addSubview(test);
     
@@ -200,7 +200,7 @@ void CDNewsViewController::buttonCallBack(CAControl* btn,DPoint point)
     string tempSign = getSign(key_value);
     CCLog("sign===%s",tempSign.c_str());
     key_value["sign"] = tempSign;
-    string tempUrl = "http://api.doubi.so/news/";
+    string tempUrl = "http://api.9miao.com/news/";
     CommonHttpManager::getInstance()->send_post(tempUrl, key_value, this,
                                                CommonHttpJson_selector(CDNewsViewController::onRequestFinished));
     {
@@ -366,12 +366,12 @@ void CDNewsViewController::initNewsPageView()
         pageViewTitle = CALabel::createWithFrame(DRect(10, winSize.width/2-40, winSize.width-50, 50));
         pageViewTitle->setText(m_page[0].m_title);
 		pageViewTitle->setColor(CAColor_white);
-        pageViewTitle->setFontSize(_px(28));
+        pageViewTitle->setFontSize(28);
         tempview->addSubview(pageViewTitle);
     }
     
     p_TableView->setTableHeaderView(tempview);
-    p_TableView->setTableHeaderHeight(_px(winSize.width/2));
+    p_TableView->setTableHeaderHeight(winSize.width/2);
 }
 
 void CDNewsViewController::viewDidUnload()
@@ -453,7 +453,7 @@ unsigned int CDNewsViewController::numberOfRowsInSection(CATableView *table, uns
 
 unsigned int CDNewsViewController::tableViewHeightForRowAtIndexPath(CATableView* table, unsigned int section, unsigned int row)
 {
-    return _px(170);
+    return 170;
 }
 
 void CDNewsViewController::scrollViewHeaderBeginRefreshing(CrossApp::CAScrollView *view)
@@ -468,7 +468,7 @@ void CDNewsViewController::scrollViewHeaderBeginRefreshing(CrossApp::CAScrollVie
     string tempSign = getSign(key_value);
     CCLog("sign===%s",tempSign.c_str());
     key_value["sign"] = tempSign;
-    string tempUrl = "http://api.doubi.so/news/";
+    string tempUrl = "http://api.9miao.com/news/";
     CommonHttpManager::getInstance()->send_post(tempUrl, key_value, this,
                                                CommonHttpJson_selector(CDNewsViewController::onRequestFinished));
     CATabBarItem* item = this->getTabBarItem();
@@ -492,7 +492,7 @@ void CDNewsViewController::scrollViewFooterBeginRefreshing(CAScrollView* view)
     string tempSign = getSign(key_value);
     CCLog("sign===%s",tempSign.c_str());
     key_value["sign"] = tempSign;
-    string tempUrl = "http://api.doubi.so/news/";
+    string tempUrl = "http://api.9miao.com/news/";
     CommonHttpManager::getInstance()->send_post(tempUrl, key_value, this,
                                                CommonHttpJson_selector(CDNewsViewController::onRefreshRequestFinished));
 }

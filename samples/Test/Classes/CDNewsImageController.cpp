@@ -53,7 +53,7 @@ void CDNewsImageTableCell::initWithCell(int num)
 	test->setColor(CAColor_black);
     test->setTextAlignment(CATextAlignmentLeft);
     test->setVerticalTextAlignmet(CAVerticalTextAlignmentTop);
-    test->setFontSize(_px(32));
+    test->setFontSize(32);
     test->setBold(true);
     test->setTag(100);
     this->addSubview(test);
@@ -65,7 +65,7 @@ void CDNewsImageTableCell::initWithCell(int num)
 	dsc->setColor(CAColor_black);
     dsc->setTextAlignment(CATextAlignmentLeft);
     dsc->setVerticalTextAlignmet(CAVerticalTextAlignmentTop);
-    dsc->setFontSize(_px(26));
+    dsc->setFontSize(26);
 
     dsc->setTag(101);
 	dsc->setColor(ccc4(200, 200, 200, 255));
@@ -148,7 +148,7 @@ void CDNewsImageController::viewDidLoad()
         string tempSign = getSign(key_value);
         CCLog("sign===%s",tempSign.c_str());
         key_value["sign"] = tempSign;
-        string tempUrl = "http://api.doubi.so/newsgirlpic/";
+        string tempUrl = "http://api.9miao.com/newsgirlpic/";
         CommonHttpManager::getInstance()->send_get(tempUrl, key_value, this,
                                                    CommonHttpJson_selector(CDNewsImageController::onRequestFinished));
         {
@@ -205,8 +205,8 @@ void CDNewsImageController::showAlert()
     btn5->setTag(100);
     btn5->setCenter(DRect(winSize.width/2, winSize.height/2, winSize.width, winSize.height));
     btn5->setTitleColorForState(CAControlStateNormal,CAColor_white);
-    btn5->setBackGroundViewForState(CAControlStateNormal, bg);
-    btn5->setBackGroundViewForState(CAControlStateHighlighted, bg);
+    btn5->setBackgroundViewForState(CAControlStateNormal, bg);
+    btn5->setBackgroundViewForState(CAControlStateHighlighted, bg);
     btn5->addTarget(this, CAControl_selector(CDNewsImageController::buttonCallBack), CAControlEventTouchUpInSide);
     p_alertView->addSubview(btn5);
     
@@ -217,7 +217,7 @@ void CDNewsImageController::showAlert()
 	test->setColor(CAColor_gray);
     test->setTextAlignment(CATextAlignmentCenter);
     test->setVerticalTextAlignmet(CAVerticalTextAlignmentTop);
-    test->setFontSize(_px(24));
+    test->setFontSize(24);
     test->setText("网络不给力，请点击屏幕重新加载～");
     p_alertView->addSubview(test);
     
@@ -240,7 +240,7 @@ void CDNewsImageController::buttonCallBack(CAControl* btn,DPoint point)
     string tempSign = getSign(key_value);
     CCLog("sign===%s",tempSign.c_str());
     key_value["sign"] = tempSign;
-    string tempUrl = "http://api.doubi.so/newsgirlpic/";
+    string tempUrl = "http://api.9miao.com/newsgirlpic/";
     CommonHttpManager::getInstance()->send_get(tempUrl, key_value, this,
                                                CommonHttpJson_selector(CDNewsImageController::onRequestFinished));
     {
@@ -262,7 +262,7 @@ void CDNewsImageController::scrollViewHeaderBeginRefreshing(CrossApp::CAScrollVi
     string tempSign = getSign(key_value);
     CCLog("sign===%s",tempSign.c_str());
     key_value["sign"] = tempSign;
-    string tempUrl = "http://api.doubi.so/newsgirlpic/";
+    string tempUrl = "http://api.9miao.com/newsgirlpic/";
     CommonHttpManager::getInstance()->send_get(tempUrl, key_value, this,
                                                CommonHttpJson_selector(CDNewsImageController::onRequestFinished));
 }
@@ -279,7 +279,7 @@ void CDNewsImageController::scrollViewFooterBeginRefreshing(CAScrollView* view)
     string tempSign = getSign(key_value);
     CCLog("sign===%s",tempSign.c_str());
     key_value["sign"] = tempSign;
-    string tempUrl = "http://api.doubi.so/newsgirlpic/";
+    string tempUrl = "http://api.9miao.com/newsgirlpic/";
     CommonHttpManager::getInstance()->send_get(tempUrl, key_value, this,
                                                CommonHttpJson_selector(CDNewsImageController::onRefreshRequestFinished));
 }
@@ -546,7 +546,7 @@ unsigned int CDNewsImageController::numberOfRowsInSection(CATableView *table, un
 
 unsigned int CDNewsImageController::tableViewHeightForRowAtIndexPath(CATableView* table, unsigned int section, unsigned int row)
 {
-    return _px(650);
+    return 650;
 }
 
 float CDNewsImageController::getRandNum()

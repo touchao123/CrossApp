@@ -7,7 +7,6 @@
 #include "support/ccUTF8.h"
 #include "platform/CCPlatformMacros.h"
 #include "CAWindow.h"
-#include "CATextView.h"
 
 
 #define CATextArrowViewWidth 30
@@ -97,10 +96,10 @@ void CATextToolBarView::show(CAView* pView)
 	this->setTextTag("CATextToolBarView");
 	m_pBackView->setAlphaThreshold(0.5f);
 
-	CAScale9ImageView *backgroundImageView = CAScale9ImageView::createWithFrame(m_pBackView->getBounds());
-	backgroundImageView->setImage(CAImage::create("source_material/alert_back.png"));
-	m_pBackView->addSubview(backgroundImageView);
-	m_pBackView->setStencil(backgroundImageView->copy());
+	CAScale9ImageView *BackgroundImageView = CAScale9ImageView::createWithFrame(m_pBackView->getBounds());
+	BackgroundImageView->setImage(CAImage::create("source_material/alert_back.png"));
+	m_pBackView->addSubview(BackgroundImageView);
+	m_pBackView->setStencil(BackgroundImageView->copy());
 
 	size_t btnCount = m_CallbackTargets.size();
 
@@ -109,8 +108,8 @@ void CATextToolBarView::show(CAView* pView)
 		CAButton* btn = CAButton::create(CAButtonTypeSquareRect);
 		btn->setTitleForState(CAControlStateAll, m_CallbackTargets[i].cszButtonText.c_str());
 		btn->setTitleColorForState(CAControlStateAll, ccc4(3, 100, 255, 255));
-		btn->setBackGroundViewForState(CAControlStateNormal, CAView::createWithColor(CAColor_clear));
-		btn->setBackGroundViewForState(CAControlStateHighlighted, CAView::createWithColor(ccc4(226, 226, 226, 225)));
+		btn->setBackgroundViewForState(CAControlStateNormal, CAView::createWithColor(CAColor_clear));
+		btn->setBackgroundViewForState(CAControlStateHighlighted, CAView::createWithColor(ccc4(226, 226, 226, 225)));
 		btn->setTag(i);
 		btn->addTarget(this, CAControl_selector(CATextToolBarView::alertViewCallback), CAControlEventTouchUpInSide);
 		btn->setFrame(DRect(i*alertViewWidth / btnCount, 0, alertViewWidth / btnCount, alertViewButtonHeight));
@@ -374,25 +373,21 @@ void CATextSelectView::ccTouchMoved(CATouch *pTouch, CAEvent *pEvent)
 	if (m_iSelViewTouchPos != 1 && m_iSelViewTouchPos != 2)
 		return;
 
-	CAIMEDispatcher::sharedDispatcher()->dispatchMoveSelectChars(m_iSelViewTouchPos == 1, pTouch->getLocation());
 }
 
 void CATextSelectView::ccCopyToClipboard()
 {
 	hideTextSelView();
-	CAIMEDispatcher::sharedDispatcher()->dispatchCopyToClipboard();
 }
 
 void CATextSelectView::ccCutToClipboard()
 {
 	hideTextSelView();
-	CAIMEDispatcher::sharedDispatcher()->dispatchCutToClipboard();
 }
 
 void CATextSelectView::ccPasteFromClipboard()
 {
 	hideTextSelView();
-	CAIMEDispatcher::sharedDispatcher()->dispatchPasteFromClipboard();
 }
 
 
@@ -531,11 +526,7 @@ bool CATextSelViewEx::ccTouchBegan(CATouch *pTouch, CAEvent *pEvent)
 	{
 		if (touchSelectText(pTouch))
 		{
-			CATextToolBarView *pToolBar = CATextToolBarView::create();
-			pToolBar->addButton(UTF8("\u526a\u5207"), m_pControlView, callfunc_selector(CATextView::ccCutToClipboard));
-			pToolBar->addButton(UTF8("\u590d\u5236"), m_pControlView, callfunc_selector(CATextView::ccCopyToClipboard));
-			pToolBar->addButton(UTF8("\u7c98\u8d34"), m_pControlView, callfunc_selector(CATextView::ccPasteFromClipboard));
-			pToolBar->show(m_pControlView);
+
 			return false;
 		}
 	}
@@ -547,7 +538,6 @@ void CATextSelViewEx::ccTouchMoved(CATouch *pTouch, CAEvent *pEvent)
 	if (m_iSelViewTouchPos != 1 && m_iSelViewTouchPos != 2)
 		return;
 
-	CAIMEDispatcher::sharedDispatcher()->dispatchMoveSelectChars(m_iSelViewTouchPos == 1, pTouch->getLocation());
 }
 
 
@@ -622,7 +612,6 @@ void CATextArrowView::ccTouchMoved(CATouch *pTouch, CAEvent *pEvent)
 {
 	if (m_isBtnPress)
 	{
-		CAIMEDispatcher::sharedDispatcher()->dispatchMoveArrowBtn(pTouch->getLocation());
 	}
 }
 

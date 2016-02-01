@@ -68,8 +68,12 @@ USING_NS_CC;
 
 - (void)dealloc
 {
-    self.uiWebView.delegate = nil;
+    [self.uiWebView setDelegate:nil];
     [self.uiWebView removeFromSuperview];
+    [self.uiWebView loadHTMLString:@"" baseURL:nil];
+    [self.uiWebView stopLoading];
+    [self.uiWebView release];
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
     self.jsScheme = nil;
     [super dealloc];
 }
@@ -78,7 +82,7 @@ USING_NS_CC;
 {
     if (!self.uiWebView)
     {
-        self.uiWebView = [[[UIWebView alloc] init] autorelease];
+        self.uiWebView = [[UIWebView alloc] init];
         self.uiWebView.delegate = self;
         self.uiWebView.scalesPageToFit = YES;
     }
@@ -100,15 +104,8 @@ USING_NS_CC;
 
 - (UIImage*)getWebViewImage
 {
-    if (UIGraphicsBeginImageContextWithOptions!=NULL)
-    {
-        UIGraphicsBeginImageContextWithOptions(self.uiWebView.frame.size, NO, 0);
-    }
-    else
-    {
-        UIGraphicsBeginImageContext(self.uiWebView.frame.size);
-    }
-    
+    static float scale = [UIScreen mainScreen].scale;
+    UIGraphicsBeginImageContextWithOptions(self.uiWebView.bounds.size, NO, scale);
     [self.uiWebView.layer renderInContext:UIGraphicsGetCurrentContext()];
     return UIGraphicsGetImageFromCurrentImageContext();
 }

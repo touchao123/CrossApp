@@ -18,7 +18,7 @@
 
 NS_CC_BEGIN
 
-CAStepper::CAStepper()
+CAStepper::CAStepper(const CAStepperOrientation& type)
 : m_bAutoRepeat(true)
 , m_bContinuous(true)
 , m_bWraps(false)
@@ -33,12 +33,19 @@ CAStepper::CAStepper()
 , m_actionType(ActionNone)
 , m_bTouchEffect(false)
 , m_pDividerImageView(NULL)
-, m_pCAStepperOrientation(CAStepperOrientationHorizontal)
+, m_pCAStepperOrientation(type)
 ,m_cTintColor(ccc4(54, 195, 240, 255))
 {
     memset(m_pBackgroundImage, 0x00, sizeof(m_pBackgroundImage));
     memset(m_pIncrementImage, 0x00, sizeof(m_pIncrementImage));
     memset(m_pDecrementImage, 0x00, sizeof(m_pDecrementImage));
+    
+    setBackgroundImage(CAImage::create("source_material/btn_rounded_normal.png"), CAControlStateNormal);
+    setBackgroundImage(CAImage::create("source_material/btn_rounded_highlighted.png"), CAControlStateHighlighted);
+    setIncrementImage(CAImage::create("source_material/stepper_inc_h.png"), CAControlStateAll);
+    setIncrementImage(CAImage::create("source_material/stepper_inc_n.png"), CAControlStateNormal);
+    setDecrementImage(CAImage::create("source_material/stepper_dec_h.png"), CAControlStateAll);
+    setDecrementImage(CAImage::create("source_material/stepper_dec_n.png"), CAControlStateNormal);
 }
 
 CAStepper::~CAStepper()
@@ -60,9 +67,9 @@ CAStepper::~CAStepper()
     CC_SAFE_RELEASE(m_pDividerImageView);
 }
 
-CAStepper* CAStepper::create()
+CAStepper* CAStepper::create(const CAStepperOrientation& type)
 {
-    CAStepper* page = new CAStepper();
+    CAStepper* page = new CAStepper(type);
     
     if (page && page->init())
     {
@@ -74,9 +81,9 @@ CAStepper* CAStepper::create()
     return NULL;
 }
 
-CAStepper* CAStepper::createWithFrame(const DRect& rect)
+CAStepper* CAStepper::createWithFrame(const DRect& rect, const CAStepperOrientation& type)
 {
-    CAStepper* page = new CAStepper();
+    CAStepper* page = new CAStepper(type);
     
     if (page && page->initWithFrame(rect))
     {
@@ -88,9 +95,9 @@ CAStepper* CAStepper::createWithFrame(const DRect& rect)
     return NULL;
 }
 
-CAStepper* CAStepper::createWithCenter(const DRect& rect)
+CAStepper* CAStepper::createWithCenter(const DRect& rect, const CAStepperOrientation& type)
 {
-    CAStepper* page = new CAStepper();
+    CAStepper* page = new CAStepper(type);
     
     if (page && page->initWithCenter(rect))
     {
@@ -108,31 +115,7 @@ bool CAStepper::init()
     {
         return false;
     }
-    setBackgroundImage(CAImage::create("source_material/btn_rounded_normal.png"), CAControlStateNormal);
-    setBackgroundImage(CAImage::create("source_material/btn_rounded_highlighted.png"), CAControlStateHighlighted);
-    setIncrementImage(CAImage::create("source_material/stepper_inc_h.png"), CAControlStateAll);
-    setIncrementImage(CAImage::create("source_material/stepper_inc_n.png"), CAControlStateNormal);
-    setDecrementImage(CAImage::create("source_material/stepper_dec_h.png"), CAControlStateAll);
-    setDecrementImage(CAImage::create("source_material/stepper_dec_n.png"), CAControlStateNormal);
-    return true;
-}
-
-bool CAStepper::initWithFrame(const DRect& rect)
-{
-    if (!CAControl::initWithFrame(rect))
-    {
-        return false;
-    }
     
-    return true;
-}
-
-bool CAStepper::initWithCenter(const DRect& rect)
-{
-    if (!CAControl::initWithCenter(rect))
-    {
-        return false;
-    }
     return true;
 }
 
@@ -361,7 +344,7 @@ void CAStepper::onEnter()
     if (m_value<m_minimumValue) {
         m_value = m_minimumValue;
     }
-    // init background
+    // init Background
     if (!m_pBackgroundImageView && m_pBackgroundImage[CAControlStateNormal]) {
         m_pBackgroundImageView = CAScale9ImageView::createWithImage(m_pBackgroundImage[CAControlStateNormal]);
         m_pBackgroundImageView->retain();
@@ -376,14 +359,15 @@ void CAStepper::onEnter()
         {
             m_pDividerImageView->setCenter(DRect(getBounds().size.width/2,
                                                   getBounds().size.height/2,
-                                                  s_px_to_dip(2),
+                                                  LINE_WIDTH,
                                                   getBounds().size.height));
-        }else{
+        }
+        else
+        {
             m_pDividerImageView->setCenter(DRect(getBounds().size.width/2,
                                                   getBounds().size.height/2,
                                                   getBounds().size.width,
-                                                  s_px_to_dip(2)));
-            m_pDividerImageView->setRotation(90);
+                                                  LINE_WIDTH));
         }
         
         
@@ -398,15 +382,17 @@ void CAStepper::onEnter()
         m_pIncrementImageView = CAImageView::createWithImage(m_pIncrementImage[CAControlStateNormal]);
         m_pIncrementImageView->retain();
         if (m_pCAStepperOrientation==CAStepperOrientationHorizontal) {
+            int tempw = MIN(getBounds().size.width, getBounds().size.height);
             m_pIncrementImageView->setImageViewScaleType(CAImageViewScaleTypeFitViewByHorizontal);
             m_pIncrementImageView->setCenter(DRect(getBounds().size.width/4*3, getBounds().size.height/2,
-                                                   getBounds().size.width/2,
-                                                   getBounds().size.height));
+                                                   tempw,
+                                                   tempw));
         }else{
+            int tempw = MIN(getBounds().size.width, getBounds().size.height);
             m_pIncrementImageView->setImageViewScaleType(CAImageViewScaleTypeFitViewByVertical);
             m_pIncrementImageView->setCenter(DRect(getBounds().size.width/2, getBounds().size.height/4,
-                                                   getBounds().size.width,
-                                                   getBounds().size.height/2));
+                                                   tempw,
+                                                   tempw));
         }
         
         insertSubview(m_pIncrementImageView,10);
@@ -417,15 +403,17 @@ void CAStepper::onEnter()
         m_pDecrementImageView = CAImageView::createWithImage(m_pDecrementImage[CAControlStateNormal]);
         m_pDecrementImageView->retain();
         if (m_pCAStepperOrientation==CAStepperOrientationHorizontal) {
+            int tempw = MIN(getBounds().size.width, getBounds().size.height);
             m_pDecrementImageView->setImageViewScaleType(CAImageViewScaleTypeFitViewByHorizontal);
             m_pDecrementImageView->setCenter(DRect(getBounds().size.width/4, getBounds().size.height/2,
-                                                   getBounds().size.width/2,
-                                                   getBounds().size.height));
+                                                   tempw,
+                                                   tempw));
         }else{
+            int tempw = MIN(getBounds().size.width, getBounds().size.height);
             m_pDecrementImageView->setImageViewScaleType(CAImageViewScaleTypeFitViewByVertical);
             m_pDecrementImageView->setCenter(DRect(getBounds().size.width/2, getBounds().size.height/4*3,
-                                                   getBounds().size.width,
-                                                   getBounds().size.height/2));
+                                                   tempw,
+                                                   tempw));
         }
         
         insertSubview(m_pDecrementImageView,10);
@@ -553,13 +541,13 @@ void CAStepper::setContentSize(const DSize & var)
         {
             m_pDividerImageView->setCenter(DRect(getBounds().size.width/2,
                                                   getBounds().size.height/2,
-                                                  s_px_to_dip(2.0f),
+                                                  LINE_WIDTH,
                                                   getBounds().size.height));
         }else{
             m_pDividerImageView->setCenter(DRect(getBounds().size.width/2,
                                                   getBounds().size.height/2,
                                                   getBounds().size.width,
-                                                  s_px_to_dip(2.0f)));
+                                                   LINE_WIDTH));
         }
     }
     
@@ -568,26 +556,30 @@ void CAStepper::setContentSize(const DSize & var)
     // init increment
     if (m_pIncrementImageView) {
         if (m_pCAStepperOrientation==CAStepperOrientationHorizontal) {
+            int tempw = MIN(getBounds().size.width, getBounds().size.height);
             m_pIncrementImageView->setCenter(DRect(getBounds().size.width/4*3, getBounds().size.height/2,
-                                                    getBounds().size.width/2,
-                                                    getBounds().size.height));
+                                                    tempw,
+                                                    tempw));
         }else{
+            int tempw = MIN(getBounds().size.width, getBounds().size.height);
             m_pIncrementImageView->setCenter(DRect(getBounds().size.width/2, getBounds().size.height/4,
-                                                    getBounds().size.width,
-                                                    getBounds().size.height/2));
+                                                    tempw,
+                                                    tempw));
         }
     }
     
     // init decrement
     if (m_pDecrementImageView) {
         if (m_pCAStepperOrientation==CAStepperOrientationHorizontal) {
+            int tempw = MIN(getBounds().size.width, getBounds().size.height);
             m_pDecrementImageView->setCenter(DRect(getBounds().size.width/4, getBounds().size.height/2,
-                                                    getBounds().size.width/2,
-                                                    getBounds().size.height));
+                                                    tempw,
+                                                    tempw));
         }else{
+            int tempw = MIN(getBounds().size.width, getBounds().size.height);
             m_pDecrementImageView->setCenter(DRect(getBounds().size.width/2, getBounds().size.height/4*3,
-                                                    getBounds().size.width,
-                                                    getBounds().size.height/2));
+                                                    tempw,
+                                                    tempw));
         }
     }
 }

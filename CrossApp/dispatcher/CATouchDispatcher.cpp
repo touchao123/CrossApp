@@ -41,6 +41,47 @@ int CATouchController::getTouchID()
     return m_pTouch ? m_pTouch->getID() : -1;
 }
 
+CAResponder* getLastResponder(CATouch* touch, const CAVector<CAView*>& subviews)
+{
+    CAResponder* lastResponder = NULL;
+    
+    for (CAVector<CAView*>::const_reverse_iterator itr=subviews.rbegin();
+         itr!=subviews.rend();
+         itr++)
+    {
+        CAView* subview = *itr;
+        if (subview->isVisible())
+        {
+            if (CAViewController* viewController = dynamic_cast<CAViewController*>(subview->getContentContainer()))
+            {
+                CC_CONTINUE_IF(!viewController->isTouchEnabled());
+                
+                DPoint point = subview->convertTouchToNodeSpace(touch);
+                
+                if (subview->getBounds().containsPoint(point))
+                {
+                    lastResponder = viewController;
+                    break;
+                }
+            }
+            else
+            {
+                CC_CONTINUE_IF(!subview->isTouchEnabled());
+                
+                DPoint point = subview->convertTouchToNodeSpace(touch);
+                
+                if (subview->getBounds().containsPoint(point))
+                {
+                    lastResponder = subview;
+                    break;
+                }
+            }
+        }
+    }
+    
+    return lastResponder;
+}
+
 std::vector<CAResponder*> CATouchController::getEventListener(CATouch* touch, CAView* view)
 {
     CAResponder* responder = view;
@@ -49,63 +90,17 @@ std::vector<CAResponder*> CATouchController::getEventListener(CATouch* touch, CA
     
     do
     {
+        //CCLog("------ %s", typeid(*responder).name());
         vector.push_back(responder);
 
-        CAResponder* lastResponder = NULL;
-        
         if (CAView* view = dynamic_cast<CAView*>(responder))
         {
-            if (view->getViewDelegate())
-            {
-                lastResponder = view->nextResponder();
-            }
-            else
-            {
-                
-                CAVector<CAView*>::const_reverse_iterator itr;
-                for (itr=view->CAView::getSubviews().rbegin();
-                     itr!=view->CAView::getSubviews().rend(); itr++)
-                {
-                    CAView* subview = *itr;
-                    if (subview->isVisible() && subview->isTouchEnabled())
-                    {
-                        CC_BREAK_IF(!subview->isTouchEnabled());
-                        
-                        DPoint point = subview->convertTouchToNodeSpace(touch);
-                        
-                        if (subview->getBounds().containsPoint(point))
-                        {
-                            lastResponder = subview;
-                            break;
-                        }
-                    }
-                }
-            }
+            responder = getLastResponder(touch, view->CAView::getSubviews());
         }
         else if (CAViewController* viewController = dynamic_cast<CAViewController*>(responder))
         {
-            CAVector<CAView*>::const_reverse_iterator itr;
-            for (itr=viewController->getView()->CAView::getSubviews().rbegin();
-                 itr!=viewController->getView()->CAView::getSubviews().rend();
-                 itr++)
-            {
-                CAView* subview = *itr;
-                if (subview->isVisible() && subview->isTouchEnabled())
-                {
-                    CC_BREAK_IF(!subview->isTouchEnabled());
-                    
-                    DPoint point = subview->convertTouchToNodeSpace(touch);
-                    
-                    if (subview->getBounds().containsPoint(point))
-                    {
-                        lastResponder = subview;
-                        break;
-                    }
-                }
-            }
+            responder = getLastResponder(touch, viewController->getView()->CAView::getSubviews());
         }
-        
-        responder = lastResponder;
     }
     while (responder);
     
@@ -135,6 +130,7 @@ void CATouchController::passingTouchesViews(float dt)
         if (!this->touchBeganWithResponder(m_vTouchesViews.at(i)))
         {
             m_vTouchesViews.erase(i);
+            m_vTouchMovedsViewCache.eraseObject(m_vTouchesViews.at(i));
         }
         else
         {
@@ -364,15 +360,10 @@ void CATouchController::touchMoved()
                     {
                         m_vTouchesViews.pushBack(m_vTouchMovedsView.front());
                         
-                        while (m_vTouchesViews.back())
+                        if (!this->touchBeganWithResponder(m_vTouchesViews.back()))
                         {
-                            if (this->touchBeganWithResponder(m_vTouchesViews.back()))
-                            {
-                                break;
-                            }
-                            m_vTouchesViews.popBack();
+                            m_vTouchesViews.clear();
                         }
-                        
                     }
                 }
             }
@@ -511,7 +502,7 @@ void CATouchDispatcher::setDispatchEventsFalse()
 
 void CATouchDispatcher::touchesBegan(CCSet *touches, CAEvent *pEvent)
 {
-    CC_RETURN_IF(!isDispatchEvents());
+    CC_RETURN_IF(!isDispatchEvents() );
     m_bLocked = true;
     
     CATouch *pTouch;

@@ -18,30 +18,29 @@ typedef enum
 {
     CAStepperOrientationHorizontal,
     CAStepperOrientationVertical
-}
-CAStepperOrientation;
+}CAStepperOrientation;
 
 class CAImageView;
 class CAScale9ImageView;
 class CC_DLL CAStepper : public CAControl {
     
 public:
-    CAStepper();
+    CAStepper(const CAStepperOrientation& type = CAStepperOrientationHorizontal);
     virtual ~CAStepper();
 
-    static CAStepper* create();
-    static CAStepper* createWithFrame(const DRect& rect);
-    static CAStepper* createWithCenter(const DRect& rect);
+    static CAStepper* create(const CAStepperOrientation& type = CAStepperOrientationHorizontal);
+    static CAStepper* createWithFrame(const DRect& rect
+                                      , const CAStepperOrientation& type = CAStepperOrientationHorizontal);
+    static CAStepper* createWithCenter(const DRect& rect
+                                       , const CAStepperOrientation& type = CAStepperOrientationHorizontal);
     
     virtual bool init();
-    virtual bool initWithFrame(const DRect& rect);
-    virtual bool initWithCenter(const DRect& rect);
     
     virtual void onEnter();
     virtual void onExit();
     
     virtual void visit();
-    CC_SYNTHESIZE(CAStepperOrientation, m_pCAStepperOrientation, StepperOrientation);
+    
     CC_SYNTHESIZE(bool, m_bContinuous, Continuous); // if true, value change events are sent any time the value changes during interaction. default = true
     CC_SYNTHESIZE(bool, m_bAutoRepeat, AutoRepeat); // if true, press & hold repeatedly alters value. default = true
     CC_SYNTHESIZE(bool, m_bWraps, Wraps);           // if true, value wraps from min <-> max. default = false
@@ -54,7 +53,7 @@ public:
 //    CC_SYNTHESIZE(CAColor4B, m_tintColor, TintColor);
     
 public:
-    // a background image which will be 3-way stretched over the whole of the control. Each half of the stepper will paint the image appropriate for its state      
+    // a Background image which will be 3-way stretched over the whole of the control. Each half of the stepper will paint the image appropriate for its state      
     void setBackgroundImage(CAImage* image, CAControlState state);
     CAImage* getBackgroundImageForState(CAControlState state);
 
@@ -83,18 +82,20 @@ public:
 
 	virtual void removeAllTargets();
 
-protected:
-    virtual bool ccTouchBegan(CATouch *pTouch, CAEvent *pEvent);    
+    virtual bool ccTouchBegan(CATouch *pTouch, CAEvent *pEvent);
     virtual void ccTouchMoved(CATouch *pTouch, CAEvent *pEvent);
     virtual void ccTouchEnded(CATouch *pTouch, CAEvent *pEvent);
     virtual void ccTouchCancelled(CATouch *pTouch, CAEvent *pEvent);
     
 protected:
+
     void repeat(float dt);
     void click(CATouch* pTouch);
     void action();
     void setContentSize(const DSize & var);
+    
 private:
+    
     CAImage* m_pBackgroundImage[CAControlStateAll];
     CAImage* m_pIncrementImage[CAControlStateAll];
     CAImage* m_pDecrementImage[CAControlStateAll];
@@ -105,6 +106,9 @@ private:
     CAImageView* m_pDecrementImageView;
     CAView* m_pDividerImageView;
     CAColor4B m_cTintColor;
+    
+    CAStepperOrientation m_pCAStepperOrientation;
+    
 private:
     
     enum ActionType

@@ -179,7 +179,7 @@ bool CACollectionView::ccTouchBegan(CATouch *pTouch, CAEvent *pEvent)
 	if (!CAScrollView::ccTouchBegan(pTouch, pEvent))
 		return false;
 
-	if (m_bAllowsSelection && this->isScrollWindowNotOutSide() == false && isInertia)
+	if (m_pContainer->isTouchEnabled() && m_bAllowsSelection && this->isScrollWindowNotOutSide() == false && isInertia)
 	{
 		DPoint point = m_pContainer->convertTouchToNodeSpace(pTouch);
 
@@ -446,9 +446,6 @@ void CACollectionView::clearData()
 
 	m_mpUsedCollectionCells.clear();
 	m_rUsedCollectionCellRects.clear();
-
-	m_pSelectedCollectionCells.clear();
-
 	m_pSectionHeaderViews.clear();
 	m_pSectionFooterViews.clear();
 	m_rSectionRects.clear();
@@ -468,8 +465,7 @@ void CACollectionView::clearData()
 
 void CACollectionView::reloadData()
 {
-	if (m_pCollectionViewDataSource == NULL)
-		return;
+	CC_RETURN_IF(m_pCollectionViewDataSource == NULL);
     
 	this->reloadViewSizeData();
     
@@ -574,7 +570,7 @@ void CACollectionView::reloadData()
         m_rSectionRects[begin + i] = sectionRect;
 	}
     
-	if (m_nCollectionFooterHeight > 0 && m_pCollectionHeaderView)
+	if (m_nCollectionFooterHeight > 0 && m_pCollectionFooterView)
 	{
 		m_pCollectionFooterView->setFrame(DRect(0, y, width, m_nCollectionFooterHeight));
 		addSubview(m_pCollectionFooterView);
@@ -714,11 +710,6 @@ void CACollectionView::update(float dt)
 float CACollectionView::maxSpeed(float dt)
 {
     return (128 * 60 * dt);
-}
-
-float CACollectionView::maxSpeedCache(float dt)
-{
-    return (maxSpeed(dt) * 2.0f);
 }
 
 float CACollectionView::decelerationRatio(float dt)

@@ -13,7 +13,7 @@ using namespace CrossApp;
 
 extern "C"
 {
-    
+
 jint JNI_OnLoad(JavaVM *vm, void *reserved)
 {
     JniHelper::setJavaVM(vm);
@@ -40,7 +40,6 @@ void Java_org_CrossApp_lib_Cocos2dxRenderer_nativeInit(JNIEnv*  env, jobject thi
         CAImageCache::reloadAllImages();
         CANotificationCenter::sharedNotificationCenter()->postNotification(EVENT_COME_TO_FOREGROUND, NULL);
         CAApplication::getApplication()->setGLDefaultValues();
-		CAWebViewImpl::setAllWebviewRectEmpty();
     }
 }
 

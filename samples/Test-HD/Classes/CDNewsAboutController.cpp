@@ -181,7 +181,7 @@ void CDNewsAboutController::viewDidLoad()
     p_TableView->setTableViewDelegate(this);
     p_TableView->setAllowsSelection(true);
     p_TableView->setAllowsMultipleSelection(false);
-    p_TableView->setBackGroundColor(CAColor_white);
+    p_TableView->setBackgroundColor(CAColor_white);
     p_TableView->setAlwaysTopSectionHeader(false);
     p_TableView->setSeparatorColor(CAColor_gray);
     p_TableView->setScrollEnabled(false);
@@ -199,7 +199,7 @@ void CDNewsAboutController::viewDidLoad()
     CAViewAnimation::setAnimationDuration(0.3f);
     //CAViewAnimation::setAnimationDidStopSelector(this, CAViewAnimation0_selector(CDNewsAboutController::endAction));
     this->getView()->setColor(ccc4(0,0,0,200));
-    bg->setFrameOrigin(CCPointMake(0, 0));
+    bg->setFrameOrigin(DPoint(0, 0));
     CAViewAnimation::commitAnimations();
 }
 

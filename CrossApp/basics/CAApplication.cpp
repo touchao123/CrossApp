@@ -27,11 +27,8 @@
 #include "platform/CADensityDpi.h"
 #include "view/CALabelStyle.h"
 
-/**
- Position of the FPS
- 
- Default: 0,0 (bottom-left corner)
- */
+
+
 #ifndef CC_DIRECTOR_STATS_POSITION
 #define CC_DIRECTOR_STATS_POSITION CAApplication::getApplication()->getVisibleOrigin()
 #endif
@@ -69,9 +66,6 @@ bool CAApplication::init(void)
     m_pRootWindow = NULL;
 
     m_pNotificationNode = NULL;
-
-    // projection delegate if "Custom" projection is used
-    m_pProjectionDelegate = NULL;
 
     // FPS
     m_fAccumDt = 0.0f;
@@ -111,6 +105,7 @@ bool CAApplication::init(void)
 
     m_fAdaptationRatio = CADensityDpi::getDensityDpi() / 320.0f;
     
+    
     return true;
 }
     
@@ -138,20 +133,8 @@ CAApplication::~CAApplication(void)
 
 void CAApplication::setDefaultValues(void)
 {
-
 	m_dOldAnimationInterval = m_dAnimationInterval = 1.0 / 100;
-
-
-	const char *projection = "3d";
-	if( strcmp(projection, "3d") == 0 )
-        m_eProjection = CAApplication::P3D;
-	else if (strcmp(projection, "2d") == 0)
-		m_eProjection = CAApplication::P2D;
-	else if (strcmp(projection, "custom") == 0)
-		m_eProjection = CAApplication::PCustom;
-	else
-		CCAssert(false, "Invalid projection value");
-
+    m_eProjection = CAApplication::Default;
 }
 
 void CAApplication::setGLDefaultValues(void)
@@ -160,11 +143,11 @@ void CAApplication::setGLDefaultValues(void)
     CCAssert(m_pobOpenGLView, "opengl view should not be null");
 
     setAlphaBlending(true);
-    setDepthTest(false);
+    setDepthTest(true);
     setProjection(m_eProjection);
 
     // set other opengl default values
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void CAApplication::updateDraw()
@@ -188,11 +171,15 @@ void CAApplication::drawScene(float dt)
         }
 #endif
         
+        if (m_pRootWindow)
+        {
+            m_pRootWindow->visitEve();
+        }
+        
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         kmGLPushMatrix();
         
-        kmGLTranslatef(-0.5f, 0, 0);
         m_uNumberOfDraws = 0;
         // draw the scene
         if (m_pRootWindow)
@@ -212,6 +199,7 @@ void CAApplication::drawScene(float dt)
         }
         
         kmGLPopMatrix();
+        
         
         m_uTotalFrames++;
         
@@ -319,7 +307,7 @@ void CAApplication::setProjection(CAApplication::Projection kProjection)
             kmGLMatrixMode(KM_GL_PROJECTION);
             kmGLLoadIdentity();
             kmMat4 orthoMatrix;
-            kmMat4OrthographicProjection(&orthoMatrix, 0, size.width, 0, size.height, -1024, 1024 );
+            kmMat4OrthographicProjection(&orthoMatrix, 0, size.width, 0, size.height, 0, 1024 );
             kmGLMultMatrix(&orthoMatrix);
             kmGLMatrixMode(KM_GL_MODELVIEW);
             kmGLLoadIdentity();
@@ -352,13 +340,6 @@ void CAApplication::setProjection(CAApplication::Projection kProjection)
         }
         break;
             
-    case CAApplication::PCustom:
-        if (m_pProjectionDelegate)
-        {
-            m_pProjectionDelegate->updateProjection();
-        }
-        break;
-            
     default:
         CCLOG("CrossApp: CAApplication: unrecognized projection");
         break;
@@ -379,7 +360,7 @@ void CAApplication::purgeCachedData(void)
 
 float CAApplication::getZEye(void)
 {
-    return (m_obWinSizeInPoints.height / 1.1566f);
+    return (m_obWinSizeInPoints.height / 1.1565f);
 }
 
 void CAApplication::setAlphaBlending(bool bOn)
@@ -402,7 +383,7 @@ void CAApplication::reshapeProjection(const DSize& newWindowSize)
 	if (m_pobOpenGLView)
 	{
 		m_obWinSizeInPoints = DSize(newWindowSize.width, newWindowSize.height);
-		setProjection(m_eProjection);       
+		setProjection(m_eProjection);
 	}
 
 }
@@ -410,10 +391,19 @@ void CAApplication::reshapeProjection(const DSize& newWindowSize)
 void CAApplication::setStatusBarStyle(const CAStatusBarStyle &var)
 {
     m_eStatusBarStyle = var;
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
     CCApplication::sharedApplication()->setStatusBarStyle(var);
 #endif
     
+}
+
+bool CAApplication::isStatusBarHidden()
+{
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    return CCApplication::sharedApplication()->isStatusBarHidden();
+#else
+    return false;
+#endif
 }
 
 void CAApplication::setDepthTest(bool bOn)
@@ -423,7 +413,10 @@ void CAApplication::setDepthTest(bool bOn)
         glClearDepth(1.0f);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
-        //glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+        
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_IOS && CC_TARGET_PLATFORM != CC_PLATFORM_ANDROID)
+        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+#endif
     }
     else
     {
@@ -432,8 +425,7 @@ void CAApplication::setDepthTest(bool bOn)
     CHECK_GL_ERROR_DEBUG();
 }
 
-static void
-GLToClipTransform(kmMat4 *transformOut)
+static void GLToClipTransform(kmMat4 *transformOut)
 {
 	kmMat4 projection;
 	kmGLGetMatrix(KM_GL_PROJECTION, &projection);
@@ -511,17 +503,20 @@ DPoint CAApplication::getVisibleOrigin()
 
 void CAApplication::runWindow(CAWindow *pWindow)
 {
-    CCAssert(pWindow != NULL, "This command can only be used to start the CAApplication. There is already a scene present.");
-    CCAssert(m_pRootWindow == NULL, "m_pRootWindow should be null");
-
-    m_bSendCleanupToScene = false;
+    if (m_pRootWindow)
+    {
+        m_pRootWindow->onExitTransitionDidStart();
+        m_pRootWindow->onExit();
+        m_pRootWindow->release();
+        m_pRootWindow = NULL;
+    }
     
-    pWindow->retain();
+    CC_SAFE_RETAIN(pWindow);
     m_pRootWindow = pWindow;
     
     startAnimation();
  
-    CAScheduler::schedule(schedule_selector(CAApplication::run), this, 0);
+    this->run(0);
 }
 
 void CAApplication::run(float dt)
@@ -531,7 +526,6 @@ void CAApplication::run(float dt)
         m_pRootWindow->onEnter();
         m_pRootWindow->onEnterTransitionDidFinish();
     }
-    CAScheduler::unschedule(schedule_selector(CAApplication::run), this);
 }
 
 void CAApplication::end()
@@ -572,15 +566,12 @@ void CAApplication::purgeDirector()
     CANotificationCenter::purgeNotificationCenter();
 
     ccGLInvalidateStateCache();
-    
-    CHECK_GL_ERROR_DEBUG();
-    
+        
     // OpenGL view
     m_pobOpenGLView->end();
     m_pobOpenGLView = NULL;
-
-    // delete CAApplication
-    release();
+    
+    this->release();
 }
 
 void CAApplication::pause(void)
@@ -699,16 +690,6 @@ void CAApplication::setNotificationView(CAView *view)
     }
     CC_SAFE_RETAIN(m_pNotificationNode);
     this->updateDraw();
-}
-
-CAApplicationDelegate* CAApplication::getDelegate() const
-{
-    return m_pProjectionDelegate;
-}
-
-void CAApplication::setDelegate(CAApplicationDelegate* pDelegate)
-{
-    m_pProjectionDelegate = pDelegate;
 }
 
 void CAApplication::setTouchDispatcher(CATouchDispatcher* pTouchDispatcher)

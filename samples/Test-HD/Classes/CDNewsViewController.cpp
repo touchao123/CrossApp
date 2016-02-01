@@ -62,7 +62,7 @@ void CDNewsViewController::viewDidLoad()
         key_value["sign_method"]="md5";
         string tempSign = getSign(key_value);
         key_value["sign"] = tempSign;
-        string tempUrl = crossapp_format_string("http://api.doubi.so/%s/",m_pNewsType.c_str());
+        string tempUrl = crossapp_format_string("http://api.9miao.com/%s/",m_pNewsType.c_str());
         CommonHttpManager::getInstance()->send_get(tempUrl, key_value, this,
                                                    CommonHttpJson_selector(CDNewsViewController::onRequestFinished));
         
@@ -127,7 +127,7 @@ void CDNewsViewController::buttonCallBack(CAControl* btn,CCPoint point)
     key_value["sign_method"]="md5";
     string tempSign = getSign(key_value);
     key_value["sign"] = tempSign;
-    string tempUrl = crossapp_format_string("http://api.doubi.so/%s/",m_pNewsType.c_str());
+    string tempUrl = crossapp_format_string("http://api.9miao.com/%s/",m_pNewsType.c_str());
     CommonHttpManager::getInstance()->send_get(tempUrl, key_value, this,
                                                CommonHttpJson_selector(CDNewsViewController::onRequestFinished));
     {
@@ -255,7 +255,7 @@ void CDNewsViewController::initNewsView()
     p_Conllection->setVertCellInterval(_px(2));
     
     p_Conllection->setHoriMargins((winSize.width-1506)/4);
-    p_Conllection->setBackGroundColor(ccc4(234,234,234,255));
+    p_Conllection->setBackgroundColor(ccc4(234,234,234,255));
     
     CAPullToRefreshView *refreshDiscount = CAPullToRefreshView::create(CAPullToRefreshView::CAPullToRefreshTypeFooter);
     refreshDiscount->setLabelColor(CAColor_black);
@@ -289,7 +289,7 @@ void CDNewsViewController::scrollViewHeaderBeginRefreshing(CrossApp::CAScrollVie
     key_value["sign_method"]="md5";
     string tempSign = getSign(key_value);
     key_value["sign"] = tempSign;
-    string tempUrl = crossapp_format_string("http://api.doubi.so/%s/",m_pNewsType.c_str());
+    string tempUrl = crossapp_format_string("http://api.9miao.com/%s/",m_pNewsType.c_str());
     CommonHttpManager::getInstance()->send_get(tempUrl, key_value, this,
                                                CommonHttpJson_selector(CDNewsViewController::onRequestFinished));
 }
@@ -306,7 +306,7 @@ void CDNewsViewController::scrollViewFooterBeginRefreshing(CAScrollView* view)
     key_value["sign_method"]="md5";
     string tempSign = getSign(key_value);
     key_value["sign"] = tempSign;
-    string tempUrl = crossapp_format_string("http://api.doubi.so/%s/",m_pNewsType.c_str());
+    string tempUrl = crossapp_format_string("http://api.9miao.com/%s/",m_pNewsType.c_str());
     CommonHttpManager::getInstance()->send_get(tempUrl, key_value, this,
                                                CommonHttpJson_selector(CDNewsViewController::onRefreshRequestFinished));
 }

@@ -172,7 +172,7 @@ bool CAWaterfallView::ccTouchBegan(CATouch *pTouch, CAEvent *pEvent)
 	if (!CAScrollView::ccTouchBegan(pTouch, pEvent))
 		return false;
 
-	if (m_bAllowsSelection && this->isScrollWindowNotOutSide() == false && isInertia)
+	if (m_pContainer->isTouchEnabled() && m_bAllowsSelection && this->isScrollWindowNotOutSide() == false && isInertia)
 	{
 		DPoint point = m_pContainer->convertTouchToNodeSpace(pTouch);
 		
@@ -413,7 +413,6 @@ void CAWaterfallView::clearData()
 {
 	m_mpUsedWaterfallCells.clear();
 	m_rUsedWaterfallCellRects.clear();
-	m_pSelectedWaterfallCells.clear();
 	m_nColumnHeightVect.clear();
 
 	for (int i = 0; i < m_vpUsedWaterfallCells.size(); i++)
@@ -467,8 +466,7 @@ unsigned int CAWaterfallView::getMaxColumnValue()
 
 void CAWaterfallView::reloadData()
 {
-	if (m_pWaterfallViewDataSource == NULL)
-		return;
+	CC_RETURN_IF(m_pWaterfallViewDataSource == NULL);
 
 	this->reloadViewSizeData();
 
@@ -614,11 +612,6 @@ void CAWaterfallView::update(float dt)
 float CAWaterfallView::maxSpeed(float dt)
 {
 	return (128 * 60 * dt);
-}
-
-float CAWaterfallView::maxSpeedCache(float dt)
-{
-	return (maxSpeed(dt) * 2.0f);
 }
 
 float CAWaterfallView::decelerationRatio(float dt)

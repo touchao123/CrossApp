@@ -78,7 +78,8 @@ public:
                                      int iLineSpacing = 0,
                                      bool bBold = false,
                                      bool bItalics = false,
-                                     bool bUnderLine = false);
+                                     bool bUnderLine = false,
+									 bool bDeleteLine = false);
     
     static int getFontHeight(const char* pFontName, unsigned long nSize);
     
@@ -125,7 +126,7 @@ public:
     static CAImage* createWithRawDataNoCache(const unsigned char * data,
                                              const CAImage::PixelFormat& pixelFormat,
                                              unsigned int pixelsWide,
-                                             unsigned int pixelsHigh);
+                                                 unsigned int pixelsHigh);
     
     static CAImage* createWithRawData(const unsigned char * data,
                                       const CAImage::PixelFormat& pixelFormat,

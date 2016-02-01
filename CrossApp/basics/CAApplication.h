@@ -48,12 +48,8 @@ public:
         
         /// sets a 3D projection with a fovy=60, znear=0.5f and zfar=1500.
         P3D,
-        
-        /// it calls "updateProjection" on the projection delegate.
-        PCustom,
-        
-        /// Default projection is 3D projection
-        Default = P3D,
+
+        Default = P2D,
     } Projection;
     
     /**
@@ -108,29 +104,16 @@ public:
     /** How many frames were called since the director started */
     inline unsigned int getTotalFrames(void) { return m_uTotalFrames; }
     
-    /** Sets an OpenGL projection
-     @since v0.8.2
-     @js NA
-     */
-    inline CAApplication::Projection getProjection(void) { return m_eProjection; }
-    void setProjection(CAApplication::Projection kProjection);
      /** reshape projection matrix when canvas has been change"*/
     void reshapeProjection(const DSize& newWindowSize);
     
     inline const CAStatusBarStyle& getStatusBarStyle() { return m_eStatusBarStyle; }
     void setStatusBarStyle(const CAStatusBarStyle& var);
+    
+    bool isStatusBarHidden();
+    
     /** Sets the glViewport*/
     void setViewport();
-
-    /** How many frames were called since the director started */
-    
-    
-    /** Whether or not the replaced scene will receive the cleanup message.
-     If the new scene is pushed, then the old scene won't receive the "cleanup" message.
-     If the new scene replaces the old one, the it will receive the "cleanup" message.
-     @since v0.99.0
-     */
-    inline bool isSendCleanupToScene(void) { return m_bSendCleanupToScene; }
 
     /** This object will be visited after the main scene is visited.
      This object MUST implement the "visit" selector.
@@ -139,12 +122,6 @@ public:
      */
     CAView* getNotificationView();
     void setNotificationView(CAView *view);
-    
-    /** CAApplication delegate. It shall implemente the CCDirectorDelegate protocol
-     @since v0.99.5
-     */
-    CAApplicationDelegate* getDelegate() const;
-    void setDelegate(CAApplicationDelegate* pDelegate);
 
     // window size
 
@@ -252,6 +229,13 @@ public:
     
     unsigned long getCurrentNumberOfDraws();
     
+    /** Sets an OpenGL projection
+     @since v0.8.2
+     @js NA
+     */
+    inline CAApplication::Projection getProjection(void) { return m_eProjection; }
+    void setProjection(CAApplication::Projection kProjection);
+    
 public:
 
     /** CATouchDispatcher associated with this director
@@ -277,15 +261,15 @@ public:
     CC_SYNTHESIZE_READONLY(float, m_fAdaptationRatio, AdaptationRatio);
     
     CC_SYNTHESIZE_READONLY(unsigned long, m_uNumberOfDraws, NumberOfDraws);
-    
+
 public:
     /** returns a shared instance of the director 
      *  @js getInstance
      */
     static CAApplication* getApplication(void);
-
+	
 protected:
-
+    
     void purgeDirector();
     bool m_bPurgeDirecotorInNextLoop; // this flag will be set to true in end()
     
@@ -323,9 +307,6 @@ protected:
     /* The running scene */
     CAWindow *m_pRootWindow;
     
-    /* If YES, then "old" scene will receive the cleanup message */
-    bool    m_bSendCleanupToScene;
-    
     /* last time the main loop was updated */
     struct cc_timeval *m_pLastUpdate;
 
@@ -343,9 +324,6 @@ protected:
 
     /* This object will be visited after the scene. Useful to hook a notification node */
     CAView *m_pNotificationNode;
-
-    /* Projection protocol delegate */
-    CAApplicationDelegate *m_pProjectionDelegate;
     
     CAStatusBarStyle m_eStatusBarStyle;
     
@@ -375,8 +353,8 @@ protected:
 // end of base_node group
 /// @}
 
-static inline float _px(float dip) { return dip; }
-static inline float _dip(float px) { return px; }
+CC_DEPRECATED_ATTRIBUTE static inline float _px(float dip) { return dip; }
+CC_DEPRECATED_ATTRIBUTE static inline float _dip(float px) { return px; }
 
 NS_CC_END
 

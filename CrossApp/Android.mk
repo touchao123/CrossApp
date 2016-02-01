@@ -35,11 +35,10 @@ control/CAStepper.cpp \
 controller/CABarItem.cpp \
 controller/CAViewController.cpp \
 controller/CADrawerController.cpp \
-dispatcher/CAIMEDispatcher.cpp \
 dispatcher/CAKeypadDelegate.cpp \
 dispatcher/CAKeypadDispatcher.cpp \
-dispatcher/CATouch.cpp \
 dispatcher/CATouchDispatcher.cpp \
+dispatcher/CATouch.cpp \
 images/CAImage.cpp \
 images/CAImageCache.cpp \
 images/CAGif.cpp \
@@ -65,6 +64,7 @@ support/ccUTF8.cpp \
 support/ConvertUTF.cpp \
 support/ConvertUTFWrapper.cpp \
 support/ccUtils.cpp \
+support/CAUIEditorParser.cpp \
 support/data_support/ccCArray.cpp \
 support/image_support/TGAlib.cpp \
 support/tinyxml2/tinyxml2.cpp \
@@ -103,8 +103,6 @@ view/CAPickerView.cpp \
 view/CADatePickerView.cpp \
 view/CAActivityIndicatorView.cpp \
 view/CAPullToRefreshView.cpp \
-view/CATextView.cpp \
-view/CATextField.cpp \
 view/CATextEditHelper.cpp \
 view/CALabelStyle.cpp \
 view/CAWebView.cpp \
@@ -139,12 +137,13 @@ platform/android/CCApplication.cpp \
 platform/android/CCCommon.cpp \
 platform/android/CCFileUtilsAndroid.cpp \
 platform/android/CAWebViewImpl.cpp \
+platform/android/CATextField.cpp \
+platform/android/CATextView.cpp \
 platform/android/CAClipboard.cpp \
 platform/android/jni/Java_org_cocos2dx_lib_Cocos2dxHelper.cpp \
 platform/android/jni/Java_org_cocos2dx_lib_Cocos2dxRenderer.cpp \
 platform/android/jni/Java_org_cocos2dx_lib_Cocos2dxAccelerometer.cpp \
 platform/android/jni/JniHelper.cpp \
-platform/android/jni/IMEJni.cpp \
 platform/android/jni/TouchesJni.cpp \
 platform/android/jni/Java_org_cocos2dx_lib_Cocos2dxSDL.cpp \
 script_support/JSViewController.cpp \
@@ -185,7 +184,7 @@ LOCAL_WHOLE_STATIC_LIBRARIES += CrossApp_curl_static
 LOCAL_WHOLE_STATIC_LIBRARIES += libwebsockets_static
 LOCAL_WHOLE_STATIC_LIBRARIES += CrossApp_libsdl_static
 
-#ifeq ($(VIDEO_ENABLE),1)
+
 LOCAL_SRC_FILES += video/CAVideoPlayerControlView.cpp \
                    video/CAVideoPlayerDecoder.cpp \
                    video/CAVideoPlayerRender.cpp \
@@ -197,7 +196,7 @@ LOCAL_WHOLE_STATIC_LIBRARIES += CrossApp_avresample_static
 LOCAL_WHOLE_STATIC_LIBRARIES += CrossApp_avutil_static
 LOCAL_WHOLE_STATIC_LIBRARIES += CrossApp_swresample_static
 LOCAL_WHOLE_STATIC_LIBRARIES += CrossApp_swscale_static
-#endif
+
 
 
 # define the macro to compile through support/zip_support/ioapi.c

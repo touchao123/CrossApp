@@ -3,7 +3,7 @@
 #include "basics/CAApplication.h"
 #include "view/CAWindow.h"
 #include "basics/CAScheduler.h"
-
+#include "support/ccUTF8.h"
 NS_CC_BEGIN
 
 
@@ -95,6 +95,14 @@ void CAVideoPlayerControlView::initWithUrl(const std::string& szUrl)
 	}
 }
 
+void CAVideoPlayerControlView::setPlayerViewDelegate(CAVideoPlayerViewDelegate* var)
+{
+	if (m_glView)
+	{
+		m_glView->setPlayerViewDelegate(var);
+	}
+}
+
 
 void CAVideoPlayerControlView::buildCtrlViews()
 {
@@ -118,12 +126,10 @@ void CAVideoPlayerControlView::buildCtrlViews()
 	// Slider 
 	do {
 		DRect frame = bottomPanel->getFrame();
-		CAImage* backImage = CAImage::create("source_material/vdo_progress_back.png");
 		CAImage* barImage = CAImage::create("source_material/vdo_progress_bar.png");
-		m_playSlider = CASlider::createWithCenter(DRect(frame.size.width / 2, frame.size.height*0.3, frame.size.width * 0.9, _px(barImage->getContentSize().height)));
-		m_playSlider->setMaxTrackTintImage(backImage);
+		m_playSlider = CASlider::createWithCenter(DRect(frame.size.width / 2, frame.size.height*0.3, frame.size.width * 0.9, 56));
 		m_playSlider->setThumbTintImage(barImage);
-		m_playSlider->setTrackHeight(_px(backImage->getContentSize().height));
+		m_playSlider->setTrackHeight(6);
 		m_playSlider->addTargetForTouchUpSide(this, CAControl_selector(CAVideoPlayerControlView::onSlideChanged));
 		m_playSlider->addTarget(this, CAControl_selector(CAVideoPlayerControlView::onSlideTouched));
 		bottomPanel->addSubview(m_playSlider);
@@ -136,8 +142,8 @@ void CAVideoPlayerControlView::buildCtrlViews()
 		CAImage* backImage_h = CAImage::create("source_material/vdo_pause_down.png");
 		frame.origin.y = frame.size.height * 2 / 3;
 		frame.origin.x = backImage->getContentSize().width;
-		frame.size.height = _px(backImage->getContentSize().height);
-		frame.size.width = _px(backImage->getContentSize().width);
+		frame.size.height = 56;
+		frame.size.width = 56;
 		m_playButton = CAButton::createWithCenter(frame, CAButtonTypeCustom);
 		m_playButton->setImageForState(CAControlStateAll, backImage);
 		m_playButton->setImageForState(CAControlStateHighlighted, backImage_h);

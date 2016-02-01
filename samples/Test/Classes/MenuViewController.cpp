@@ -30,7 +30,7 @@ void MenuViewController::viewDidLoad()
     tableView->setAllowsSelection(true);
     tableView->setTableViewDelegate(this);
     tableView->setTableViewDataSource(this);
-    tableView->setBackGroundColor(CAColor_clear);
+    tableView->setBackgroundColor(CAColor_clear);
     tableView->setSeparatorColor(ccc4(166, 166, 166,100));
     tableView->setShowsScrollIndicators(false);
     this->getView()->addSubview(tableView);
@@ -62,7 +62,7 @@ void MenuViewController::tableViewDidSelectRowAtIndexPath(CATableView* table, un
         _webController->autorelease();
         RootWindow::getInstance()->getDrawerController()->hideLeftViewController(true);
         RootWindow::getInstance()->getRootNavigationController()->pushViewController(_webController, true);
-        _webController->initWebView("http://www.crossapp.com.cn");
+        _webController->initWebView("http://crossapp.9miao.com");
     }
     else if(row==3)
     {
@@ -92,7 +92,7 @@ CATableViewCell* MenuViewController::tableCellAtIndex(CATableView* table, const 
                                                             _size.height));
         test->setTextAlignment(CATextAlignmentLeft);
         test->setVerticalTextAlignmet(CAVerticalTextAlignmentCenter);
-        test->setFontSize(_px(32));
+        test->setFontSize(32);
 		test->setColor(CAColor_white);
         test->setTag(100);
         cell->addSubview(test);
@@ -121,5 +121,5 @@ unsigned int MenuViewController::numberOfSections(CATableView *table)
 
 unsigned int MenuViewController::tableViewHeightForRowAtIndexPath(CATableView* table, unsigned int section, unsigned int row)
 {
-    return _px(100);
+    return 100;
 }

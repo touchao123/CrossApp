@@ -65,7 +65,7 @@ bool RootWindow::init()
     
     m_pRootNavigationController = new CANavigationController();
     m_pRootNavigationController->initWithRootViewController(tabBarController);
-    m_pRootNavigationController->setNavigationBarBackGroundImage(CAImage::create("image/navbg.jpg"));
+    m_pRootNavigationController->setNavigationBarBackgroundImage(CAImage::create("image/navbg.jpg"));
     m_pRootNavigationController->getView()->setDisplayRange(true);
     
     CDTempViewController* viewContrller = new CDTempViewController();
@@ -77,16 +77,16 @@ bool RootWindow::init()
     viewContrller->setNavigationBarItem(temp_nav1);
     m_pRootNavigationController1 = new CANavigationController();
     m_pRootNavigationController1->initWithRootViewController(viewContrller);
-    m_pRootNavigationController1->setNavigationBarBackGroundImage(CAImage::create("image/navbg.jpg"));
+    m_pRootNavigationController1->setNavigationBarBackgroundImage(CAImage::create("image/navbg.jpg"));
 
     _vec.pushBack(_menuview);
     _vec.pushBack(m_pRootNavigationController);
     _vec.pushBack(m_pRootNavigationController1);
     _splitViewController = new CASplitViewController();
     vector<unsigned int> widths;
-    widths.push_back(_px(200));
-    widths.push_back(_px(winSize.width-200)/2);
-    widths.push_back(_px(winSize.width-200)/2);
+    widths.push_back(200);
+    widths.push_back((winSize.width-200)/2);
+    widths.push_back((winSize.width-200)/2);
     _splitViewController->initWithController(_vec, widths);
     _splitViewController->setBackgroundView(CAImageView::createWithImage(CAImage::create("image/bg1.jpg")));
     
@@ -95,7 +95,7 @@ bool RootWindow::init()
     _splitViewController->setNavigationBarItem(temp_nav2);
     m_pSplitNavigationController = new CANavigationController();
     m_pSplitNavigationController->initWithRootViewController(_splitViewController);
-    m_pSplitNavigationController->setNavigationBarBackGroundImage(CAImage::create("image/navbg.jpg"));
+    m_pSplitNavigationController->setNavigationBarBackgroundImage(CAImage::create("image/navbg.jpg"));
     
     this->setRootViewController(m_pSplitNavigationController);
     _splitViewController->autorelease();

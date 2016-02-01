@@ -110,7 +110,7 @@ void CDNewsMenuView::viewDidLoad()
     tableView->setAllowsSelection(true);
     tableView->setTableViewDelegate(this);
     tableView->setTableViewDataSource(this);
-    tableView->setBackGroundColor(CAColor_clear);
+    tableView->setBackgroundColor(CAColor_clear);
     tableView->setSeparatorColor(ccc4(166, 166, 166,100));
     tableView->setShowsScrollIndicators(false);
     tableView->setSeparatorViewHeight(2);

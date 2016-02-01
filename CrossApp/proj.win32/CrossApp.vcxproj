@@ -217,6 +217,8 @@ xcopy /Y /Q "$(ProjectDir)..\support\sqlite3\win32\*.*" "$(OutDir)"</Command>
     <ClCompile Include="..\platform\platform.cpp" />
     <ClCompile Include="..\platform\win32\CAClipboard.cpp" />
     <ClCompile Include="..\platform\win32\CADensityDpi.cpp" />
+    <ClCompile Include="..\platform\win32\CATextField.cpp" />
+    <ClCompile Include="..\platform\win32\CATextView.cpp" />
     <ClCompile Include="..\platform\win32\CAWebViewImpl.cpp" />
     <ClCompile Include="..\platform\win32\CCAccelerometer.cpp" />
     <ClCompile Include="..\platform\win32\CCApplication.cpp" />
@@ -235,6 +237,7 @@ xcopy /Y /Q "$(ProjectDir)..\support\sqlite3\win32\*.*" "$(OutDir)"</Command>
     <ClCompile Include="..\support\CANotificationCenter.cpp" />
     <ClCompile Include="..\support\CAPointExtension.cpp" />
     <ClCompile Include="..\support\CAProfiling.cpp" />
+    <ClCompile Include="..\support\CAUIEditorParser.cpp" />
     <ClCompile Include="..\support\ccUTF8.cpp" />
     <ClCompile Include="..\support\ccUtils.cpp" />
     <ClCompile Include="..\support\CCVertex.cpp" />
@@ -297,8 +300,6 @@ xcopy /Y /Q "$(ProjectDir)..\support\sqlite3\win32\*.*" "$(OutDir)"</Command>
     <ClCompile Include="..\view\CAScrollView.cpp" />
     <ClCompile Include="..\view\CATableView.cpp" />
     <ClCompile Include="..\view\CATextEditHelper.cpp" />
-    <ClCompile Include="..\view\CATextField.cpp" />
-    <ClCompile Include="..\view\CATextView.cpp" />
     <ClCompile Include="..\view\CAView.cpp" />
     <ClCompile Include="..\view\CAWaterfallView.cpp" />
     <ClCompile Include="..\view\CAWebView.cpp" />
@@ -355,6 +356,8 @@ xcopy /Y /Q "$(ProjectDir)..\support\sqlite3\win32\*.*" "$(OutDir)"</Command>
     <ClInclude Include="..\platform\CAFreeTypeFont.h" />
     <ClInclude Include="..\platform\CAFTFontCache.h" />
     <ClInclude Include="..\platform\CATempTypeFont.h" />
+    <ClInclude Include="..\platform\CATextField.h" />
+    <ClInclude Include="..\platform\CATextView.h" />
     <ClInclude Include="..\platform\CCAccelerometerDelegate.h" />
     <ClInclude Include="..\platform\CCApplicationProtocol.h" />
     <ClInclude Include="..\platform\CCCommon.h" />
@@ -399,6 +402,7 @@ xcopy /Y /Q "$(ProjectDir)..\support\sqlite3\win32\*.*" "$(OutDir)"</Command>
     <ClInclude Include="..\support\CANotificationCenter.h" />
     <ClInclude Include="..\support\CAPointExtension.h" />
     <ClInclude Include="..\support\CAProfiling.h" />
+    <ClInclude Include="..\support\CAUIEditorParser.h" />
     <ClInclude Include="..\support\ccUTF8.h" />
     <ClInclude Include="..\support\ccUtils.h" />
     <ClInclude Include="..\support\CCVertex.h" />
@@ -474,8 +478,6 @@ xcopy /Y /Q "$(ProjectDir)..\support\sqlite3\win32\*.*" "$(OutDir)"</Command>
     <ClInclude Include="..\view\CAScrollView.h" />
     <ClInclude Include="..\view\CATableView.h" />
     <ClInclude Include="..\view\CATextEditHelper.h" />
-    <ClInclude Include="..\view\CATextField.h" />
-    <ClInclude Include="..\view\CATextView.h" />
     <ClInclude Include="..\view\CAView.h" />
     <ClInclude Include="..\view\CAWaterfallView.h" />
     <ClInclude Include="..\view\CAWebView.h" />
@@ -486,9 +488,6 @@ xcopy /Y /Q "$(ProjectDir)..\support\sqlite3\win32\*.*" "$(OutDir)"</Command>
     <None Include="..\support\Json\lib_json\json_internalarray.inl" />
     <None Include="..\support\Json\lib_json\json_internalmap.inl" />
     <None Include="..\support\Json\lib_json\json_valueiterator.inl" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="libCrossApp.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

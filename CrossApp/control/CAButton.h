@@ -47,9 +47,9 @@ public:
     
     virtual bool init();
     
-    void setBackGroundViewForState(const CAControlState& controlState, CAView *var);
+    void setBackgroundViewForState(const CAControlState& controlState, CAView *var);
     
-    CAView* getBackGroundViewForState(const CAControlState& controlState);
+    CAView* getBackgroundViewForState(const CAControlState& controlState);
     
     void setImageForState(const CAControlState& controlState, CAImage* var);
     
@@ -116,24 +116,33 @@ protected:
     CAColor4B m_sImageColor[CAControlStateAll];
     
     CAColor4B m_sTitleColor[CAControlStateAll];
-    
-    std::string m_sTitleFontName;
-    
+
     CAImageView* m_pImageView;
     
     CALabel* m_pLabel;
     
-    CAView* m_pBackGroundView[CAControlStateAll];
+    CAView* m_pBackgroundView[CAControlStateAll];
+    
+    std::string m_sTitleFontName;
     
     float m_fTitleFontSize;
-    
+        
     DSize m_pTitleLabelSize;
+    
+    bool m_bDefineTitleLabelSize;
     
     DSize m_pImageSize;
     
+    bool m_bDefineImageSize;
+    
     DSize m_pTitleOffset;
     
+    bool m_bDefineTitleOffset;
+    
     DSize m_pImageOffset;
+    
+    bool m_bDefineImageOffset;
+    
 protected:
     
     void updateWithPreferredSize();
@@ -152,11 +161,13 @@ protected:
     
     void setContentSize(const DSize & var);
 
-    void setBackGroundViewSquareRect();
+    void setBackgroundViewSquareRect();
     
-    void setBackGroundViewRoundedRect();
+    void setBackgroundViewRoundedRect();
 };
 
+#define setBackGroundViewForState(controlState, var) setBackgroundViewForState(controlState, var)
+#define getBackGroundViewForState(controlState, var) getBackgroundViewForState(controlState, var)
 NS_CC_END
 
 #endif /* defined(__CAButton__) */
